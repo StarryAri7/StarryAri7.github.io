@@ -1,6 +1,8 @@
 project:
   type: website
-
+  output-dir: docs
+  
+# ~ additional metadata excluded for brevity ~
 website:
   title: "StarryAri7.github.io"
   navbar:
@@ -16,4 +18,5 @@ format:
     toc: true
 
 editor: visual
+
 
