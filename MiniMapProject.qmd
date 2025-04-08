@@ -287,7 +287,6 @@ bird_mainland +
 **A major insight from this map is that many regions of states choose birds within the same family, implying that bird likely lives within that area. this is especially true of the Icteridae (Meadow larks) in the great plains, Mimidae (mocking birds) in the south east, and Cardinalidae (Cardinals) in the central eastern region. All 3 of these birds have high concentrations in these areas, so their states seem to have chosen a local bird that they feel represents them.**
 
 ```{r}
-#| eval: FALSE
 
 #I had some issues with NA's in this leaflet so I removed them all at the start
 birdsstates <- birdsstates |> drop_na(family)
@@ -360,7 +359,6 @@ birdsstates |>
 ```
 
 ```{r}
-#| eval: FALSE
 
 # Same issue with Na's
 publicland <- publicland |> drop_na(change_1990)
