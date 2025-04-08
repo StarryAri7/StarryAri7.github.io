@@ -2,12 +2,10 @@
 title: "Mini Mapping Project"
 sidebar: false
 format:
-  pdf: default
+  html: default
 editor_options: 
   chunk_output_type: console
 ---
-
-
 
 ```{r}
 library(tidyverse) #for data manipulation
@@ -17,15 +15,13 @@ library(sf) #for mapping
 library(ggthemes) #for setting my static maps design
 ```
 
-
-
 ```{r}
 #State Boundaries
 states_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |>
   select(name, geometry)
 
 # Shoutout Prof. B-V for teaching me how to do this! This is my numeric dataset
-publicland <- read_csv("https://raw.githubusercontent.com/StarryAri7/SDS264_F24/refs/heads/main/2018%20land%20cover.csv") |> 
+publicland <- read_csv("https://raw.githubusercontent.com/StarryAri7/SDS264_F24/refs/heads/main/data/2018%20land%20cover.csv") |> 
 # The data had % signs in it and was categorical, which wouldn't work for 
 # my purposes, this removes that issue
   mutate(federal_land_pcnt = str_replace(federal_land_pcnt, "%", ""),
@@ -42,14 +38,13 @@ publicland <- states_sf |> left_join(publicland, by = c("name" = "State"))
 # I used table 4
 
 # This is my categorical dataset!
-birds <- read_csv("https://raw.githubusercontent.com/StarryAri7/SDS264_F24/refs/heads/main/birds.csv") 
+birds <- read_csv("https://raw.githubusercontent.com/StarryAri7/SDS264_F24/refs/heads/main/data/birds.csv") 
 # This again joins it to the state boundaries
 birdsstates <- states_sf |> left_join(birds, by = c("name" = "State"))
 
 # My bird data was found at https://www.50states.com/bird/ 
 # The website is interesting, but I double checked the data!
 ```
-
 
 ```{r}
 
@@ -92,9 +87,9 @@ ggplot() +
         legend.text=element_text(size=10),
         # I angled the Longitude so it wouldn't overlap
         axis.text.x = element_text(angle = 25, vjust = .8),
-        title = element_text(size = 12),
-        text = element_text(family="Avatar Airbender"))
-) 
+        title = element_text(size = 12)
+        )
+
 
 
 public_alaska2  <- publicland |>
@@ -157,9 +152,8 @@ mainland2 +
 ```
 
 # Alt-text / Description
+
 **This is a chloropleth map of the United States of America, the X and Y axis are longitude and latitude, respectively. Alaska and Hawaii have been moved to the bottom left of the map for clarity of sight. Each state is filled with a color based on the percentage of change in federal land from 1990 to 2018. They range from -20% (a decrease in federal land) to 193% (a large increase in federal land). The biggest takeaway is that the majority of states have changed no more than 5% in the positive or negative direction. the pacific northwest seems to have gained land slightly, while the southwest states have all lost land, with Arizona having decreased the most in the country. The eastern side of the US, has largely made gains from 1% up to 70% in Maine.**
-
-
 
 ```{r}
 #| fig-width: 10
@@ -363,8 +357,7 @@ birdsstates |>
               options = popupOptions(closeOnClick = FALSE)) |>
   # You gotta have a scale bar!
   addScaleBar(position = "bottomleft")
-```           
-
+```
 
 ```{r}
 #| eval: FALSE
@@ -417,4 +410,3 @@ publicland |>
   # (this also helps if you remove the above line, adds a pipe catch)
   addScaleBar(position = "bottomleft") 
 ```
-
