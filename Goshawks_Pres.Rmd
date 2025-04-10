@@ -1,0 +1,366 @@
+---
+title: "Northern Goshawks Observations in California"
+author: "Aria Whalen + Emma Coen-Pesch"
+date: "1/18/2024"
+output:
+  html_document:
+    df_print: paged
+  editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup,include=FALSE}
+library(sp)
+library(sf)
+library(tidyverse)
+library(ggspatial)
+library(spatstat)
+library(tmap)
+library(patchwork)
+library(leaflet.providers)
+library(leaflet)
+library(spData)
+```
+
+#### Disclaimer: Throughout this paper we refer to Northern Goshawks and American Goshawks somewhat interchangibly. Until this summer, Northern Goshawks were a single species, wheras now they have split into American and Eurasian Goshawk Subspecies. The study spans before and after the split, but only ever focused on American Goshawks.
+
+### Introduction:
+
+##### The Institute for Bird Populations has conducted population surveys for American goshawks in the Stanislaus and Plumas National Forests for a number of years. The American goshawk is a hawk with short wings and a tail it uses as a rudder for increased agility. They live in large expanses of forests and are difficult to find. When you do find one though, they are highly territorial and quickly will let you know that you should leave them alone by using defensive calls and sometimes dive-bombing.
+
+##### The USDA has the American Goshawk listed as a sensitive species. There is, however, a history of organizations petitioning to have the species listed as endangered due to increasing loss of mature forests that make up their habitat. Last summer, Emma worked as a field technician in the Stanislaus National Forest with IBP, working with a team throughout the summer to collect data for their goshawk project. We decided to look at some of the data from the project to see if we could find any patterns or come up with any interesting questions from it. The main question guiding us through this project is, which evidence of goshawks is most correlated with (or attracted to) active goshawk nests?
+
+##### - First we must load in our data. We received goshawks_sf and PACBound from Lynn Schofield, a Biologist with the Insitute for Bird Populations. We found NatFors_sf on the USDA website.
+
+```{r,include=FALSE}
+goshawks_sf <- read_sf("~/1R_Important/StarryAri7.github.io/data/Goshawks Data/All_NOGO_Observations.shp")
+NatFors_sf <- read_sf("~/1R_Important/StarryAri7.github.io/data/Forest Data/S_USA.AdministrativeForest.shp")
+PACBound <- read_sf("~/1R_Important/StarryAri7.github.io/data/PAC Data/NOGO_Search_Areas_PACs.shp")
+data(us_states)
+```
+
+##### - We then made a couple of conversions in order to make the data work for us. To use the goshawks_sf dataset for our tests we need to convert the data from its native CRS in latitude and longitude to a new CRS in meters. We chose UTM zone 10 as the CRS for our data as it falls within that zone and is measured in meters.
+
+##### We also filtered out a variety of variables for later. The Plum and Stan forest bounds will be used in our map at the end, and the MGosObs filters remove a variety of variables that are broken and not of use to our analysis.
+
+```{r,echo=FALSE}
+
+ MGosObs<- goshawks_sf|> st_transform(32610)
+
+StanBoundFors <- NatFors_sf |>
+  filter(FORESTNAME == "Stanislaus National Forest")
+PlumBoundFors <- NatFors_sf |>
+   filter(FORESTNAME == "Plumas National Forest")
+
+MGosObs <- MGosObs |> 
+  relocate(Obs_Type, .before=Forest)
+MGosObs <- MGosObs |> 
+  filter(Obs_Type != "NA")
+MGosObs <- MGosObs |> 
+  filter(Obs_Type != "Other")
+MGosObs <- MGosObs |> 
+  filter(Obs_Type != "NestUnknownStatus")
+MGosObs <- MGosObs |>
+    mutate(Obs_Type = recode(Obs_Type, PreyRemainsY = 'PreyRemains'))
+
+ca_map <- us_states %>% filter(NAME == "California") |> 
+  st_transform(st_crs(MGosObs))
+
+MGosObs
+```
+
+##### We had to play around with the data to make sure it was representing reality correctly. We quickly noticed that we had a few duplicate 'active nest' data points, and were wondering if they were the same nest marked twice or different nests that were really close to each other.
+
+```{r,echo=FALSE, message = FALSE}
+goshawks_sf |>
+  filter(Forest=="Stanislaus", Obs_Type== "ActiveNest")|> 
+  ggplot() + 
+   annotation_map_tile(zoom=10) +
+  geom_sf() +
+   labs(title="Active Goshawk Nests with Duplicates", x="Longitude", y="Latitude")
+```
+
+##### We created a "Year" column from our mm/dd/yy date format then looked at a graph that gave different colors to nests found in different years. From this we concluded that they were in fact just the same nest from different years.
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+  #create Year column
+
+goshawks_sf <- goshawks_sf |>
+  mutate(Year = year(Survey_Dat))
+
+
+#BEFORE, Just looking at Active Nests
+
+goshawks_sf |>
+  filter(Forest=="Stanislaus", Obs_Type== "ActiveNest")|> 
+  ggplot() + 
+   annotation_map_tile(zoom=10) +
+  geom_sf(aes(color=as.factor(Year))) +
+   labs(title="Active Goshawk Nests with Duplicates \n colored by year", color="Year", x="Longitude", y="Latitude")
+```
+
+##### We then simply searched through the dataset to find which columns contained the older of the 2 pairs of data and removed the duplicate nests using the slice() function.
+
+```{r,echo=FALSE}
+
+#remove duplicate nests and show after
+   
+goshawks_sf <- goshawks_sf |>
+  slice(-c(3,8,14,17,18,20))
+
+goshawks_sf |>
+  filter(Forest=="Stanislaus", Obs_Type== "ActiveNest")|> 
+  ggplot() + 
+   annotation_map_tile(zoom=10) +
+  geom_sf(aes(color=as.factor(Year)))+
+  labs(title="Final Active Goshawk Nests \n colored by year", color="Year", x= "Longitude", y= "Latitude") 
+
+```
+
+##### We also made an interactive map with all the Goshawk related observational data. The blue and purple outlines show Stanislaus and Plumas forests respectively. The red outlines within the Stanislaus are survey areas known as PACs. Sadly the study is being done differently in Plumas Forest, and not as far progressed, so there are no PACs, it's less specific, and there is less data to analyze at this time. We will only be further analyzing the Stanislaus Forest PAC data for this reason. Lastly for the map, you will notice a layers section on the left side of the view panel-- we encourage you to play around with removing and adding layers to see how they cluster! Active Nests are our variable of interest, and we looked at the other 8 variables to try to tell how predictive they are of an active nest. Though we will go on to test these correlations below, the map provides a fun, engaging, and visual way to look at the observations collected.
+
+```{r,echo=FALSE}
+#T map
+
+
+tmap_mode("view")
+ tm_basemap("Esri.WorldTopoMap") +
+   tm_shape(ca_map) + 
+    tm_borders(col = "White", lwd = 2) +
+   tm_shape(StanBoundFors) + 
+    tm_borders(col = "Blue", lwd = 2) + 
+   tm_shape(PlumBoundFors) + 
+    tm_borders(col = "Purple", lwd = 2) +
+   tm_shape(PACBound) + 
+    tm_borders(col = "Red", lwd = 1) +
+   tm_shape(MGosObs) +
+    tm_dots("Obs_Type",palette="Accent", size=.3,legend.show=0) +
+       tm_facets("Obs_Type", as.layers=TRUE) +
+   tm_layout(title = "Northern Goshawks Observations") + 
+   tm_add_legend(type="fill",labels = c("Active Nest",
+                                        "Auditory", 
+                                        "Inactive Nest", 
+                                        "Molted Feather", 
+                                        "Plucking Post",
+                                        "Prey Remains",
+                                        "Seen and Heard",
+                                        "Visual",
+                                        "Whitewash")
+                 ,col=c("#7FC97F",
+                        "#B6B1C9",
+                        "#EDBB99",
+                        "#FEE791",
+                        "#9BB5A4",
+                        "#7D449D",
+                        "#E31864",
+                        "#B35C20",
+                        "#666666")) +
+   tm_scale_bar(position="left")
+```
+
+##### - Bounding posed another early challenge in our analysis. Due to the ongoing nature of the study and unsurity about the scale of what was studied and what wasn't studied in each forest we had to make some assumptions and pretty quickly throw out ideas of doing a standard density plot and prediction analysis. To start a rough analysis we created our own bounding boxes by drawing a line around where our points were. We later also made a bounding with all the points in one 'box', and a bounding with the 2 forests in two seperate boundings but within one window.
+
+```{r,echo=FALSE}
+ 
+  #Sets Rough bounding boxes for each forest
+  
+#Stanislaus
+StanBound <- goshawks_sf |>
+   filter(Forest=="Stanislaus") |> 
+  summarize(geometry=st_union(geometry)) |>
+ st_convex_hull() |> st_buffer(1000)
+
+#Plumas
+PlumBound <- goshawks_sf |>
+   filter(Forest=="Plumas") |> 
+  summarize(geometry=st_union(geometry)) |>
+ st_convex_hull()|> st_buffer(1000)
+
+#AllinOne
+AllBound <- goshawks_sf |> 
+  summarize(geometry=st_union(geometry)) |>
+ st_convex_hull() |> st_buffer(3000)
+
+#BothinOne
+BothBound<-  StanBound |> bind_rows(PlumBound)
+
+```
+
+##### After bounding the data, we needed to go through the process of turning our data from sf files into ppp objects for analysis of our point pattern data. We isolated the specific locations and variables of interest for each of our 4 different location types, turned the bounding boxes into windows, and combined the datapoints with the windows to make a ppp object for Plumas, Stanislaus, Both in separate borders, and All in a single border. A keen observer will also notice the entrance of PAC.ppp. This is a premade bounding dataset we recieved last (seen earlier in the interactive map, displayed in red), which helps limit the data to the more specific regions studied within the Stanislaus forest.
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+#Make Plumas and Stanislaus GosObs ppp objects
+
+PlumGosObs <- MGosObs |> 
+  bind_cols(st_coordinates(MGosObs)) |>
+   filter(Forest=="Plumas") |> 
+  as_tibble() |>
+  select(X,Y,Obs_Type) |> 
+  mutate(Obs_Type=as.factor(Obs_Type)) |> 
+  drop_na(Obs_Type)
+
+StanGosObs <- MGosObs |> 
+  bind_cols(st_coordinates(MGosObs)) |>
+   filter(Forest=="Stanislaus") |>  as_tibble() |>
+  select(X,Y,Obs_Type) |> 
+  mutate(Obs_Type=as.factor(Obs_Type)) |>
+  drop_na(Obs_Type)
+
+#Also making a ppp object for All of them collectively
+
+AllGosObs <- MGosObs |> 
+  bind_cols(st_coordinates(MGosObs)) |>
+  as_tibble() |>
+  select(X,Y,Obs_Type) |> 
+  mutate(Obs_Type=as.factor(Obs_Type)) |> 
+  drop_na(Obs_Type)
+
+
+#Can check to make sure the coordinates are good: 
+ # head(PlumGosObs)
+ # head(StanGosObs)
+ # head(AllGosObs)
+    
+    
+#Extract the Windows: 
+  StanWin <- StanBound |>   st_transform(st_crs(MGosObs)) |>  as.owin()
+  PlumWin <- PlumBound |>   st_transform(st_crs(MGosObs)) |>  as.owin()
+  AllWin <- AllBound |>   st_transform(st_crs(MGosObs)) |>  as.owin()
+  BothWin <- BothBound |>   st_transform(st_crs(MGosObs)) |>  as.owin()
+  PACWin <- PACBound |>   st_transform(st_crs(MGosObs)) |>  as.owin()
+  
+#Combine into ppp object: 
+  Plum.ppp <- as.ppp(PlumGosObs, W = PlumWin)
+  Stan.ppp <- as.ppp(StanGosObs, W = StanWin)
+  AllGos.ppp <- as.ppp(AllGosObs, W = AllWin)
+  Both.ppp <- as.ppp(AllGosObs, W = BothWin)
+  PAC.ppp <- as.ppp(StanGosObs, W = PACWin)
+  
+#And then you can plot it like normal and run all the tests:
+  
+  par(mfrow=c(1,2))
+ plot(PAC.ppp)
+ plot(Stan.ppp)
+ plot(Plum.ppp)
+ plot(AllGos.ppp)
+ plot(Both.ppp)
+```
+
+##### As you can see, we went through a lot of iterations on this project: first starting with the separate Plumas and Stanislaus window, then creating the All bound and the Both separately, before finally landing on the PAC data, which is by far the most reliable, as we will see below.
+
+##### Here we can see the difference between the same test (clustering between active nests and molted feathers) across the 5 different bounding windows, offering a plethora of different answers. While all confidently show clustering, due to the PAC data being the only dataset that limits the scope of our analysis to the specific regions that were studied, we can output the most accurate data, especially at further distances (which should likely be random, as seen in the first plot). We used Kcross to analyze most of the data in our study as our research question revolves around the correlation between 2 variables, an indiciative observation, and the likelihood that it is correlated to a nest being nearby. Kcross tests just that, to see if 2 variables are attracted, randomly assorted, or repelled across a wide range of distance radii. The envelope (gray area) represents an area where the 2 variables of interest are just randomly assorted to chance, while being above the envelope indicates a notable attraction at that distance, and below the envelope indicates a notable repellence of the 2 variables at that distance.
+
+```{r,include=FALSE}
+pacs <- PAC.ppp |>  envelope(Kcross, i = "ActiveNest", j = "MoltedFeather",rmax=2000) 
+  
+stan <- Stan.ppp |>  envelope(Kcross, i = "ActiveNest", j = "MoltedFeather",rmax=5000)
+ 
+plum <- Plum.ppp |>  envelope(Kcross, i = "ActiveNest", j = "MoltedFeather",rmax=5000) 
+  
+all <- AllGos.ppp |>  envelope(Kcross, i = "ActiveNest", j = "MoltedFeather",rmax=5000) 
+  
+both <- Both.ppp |>  envelope(Kcross, i = "ActiveNest", j = "MoltedFeather",rmax=5000)
+```
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+
+plot(pacs, main="PACs \n(Best, most accurate)",xlab="Distance (meters)")
+plot(stan, main="Stanislaus Bound \n(Decent, less accurate)",xlab="Distance (meters)")
+plot(plum, main="Plumas Bound \n(Unreliable accuracy)",xlab="Distance (meters)")
+plot(all, main="All Bound \n(Worst, distances innacurate)",xlab="Distance (meters)")
+plot(both, main="Both Bound + Combined \n(Similarly Bad and innacurate)",xlab="Distance (meters)")
+```
+
+##### Out of all our types of evidence, (Auditory, Whitewash, Seen and Heard, Visual, Molted Feather, Prey Remains, Inactive Nest, Plucking Post) we wanted to see which was the most likely to correlate with the actual presence of an active nest. This information could be helpful for researchers when they are trying to determine the most efficient methods for surveying.
+
+### Types of Evidence:
+
+#### Active Nest: Observance of a Northern Goshawk Nest that was actively in use.
+
+#### Auditory: Observer heard a Northern Goshawk call
+
+#### Visual: Observer saw a Northern Goshawk
+
+#### Seen and Heard: Observer saw a Northern Goshawk and heard it's call
+
+#### Molted Feather: Observance of Northern Goshawk feathers shed onto the ground
+
+#### Whitewash: Observance of Northern Goshawk poop. Observers specifically looked for raptor whitewash which is distinctive from that of smaller birds due to a notably larger splatter.
+
+#### Inactive Nest: Observance of a Northern Goshawk Nest from a previous breeding season that was no longer in use.
+
+#### Prey Remains: Observance of remains of prey that Northern Goshawks are known to eat. Examples include feathers from smaller birds and parts of small mammals left behind from a raptor meal.
+
+#### Plucking Post: Observance of a stump or similar structure used by raptors to strip feathers or fur from their prey.
+
+### K-Cross
+
+##### Because we're looking at point-pattern data and the nature of our bounding boxes (even with the PAC data), we decided to largely evaluate using a Kcross function. Due to the evenness of the forest in scale and the limits of our data, we chose to assume homogeneity for our tests, with a limit of 2000 meters.
+
+```{r,include=FALSE}
+   
+feathers <- PAC.ppp |>  envelope(Kcross, i = "ActiveNest", j = "MoltedFeather",rmax=2000) 
+   
+prey <- PAC.ppp |>  envelope(Kcross, i = "ActiveNest", j = "PreyRemains",rmax=2000)
+   
+audio <- PAC.ppp |>  envelope(Kcross, i = "ActiveNest", j = "Auditory",rmax=2000) 
+
+visual <-   PAC.ppp |>  envelope(Kcross, i = "ActiveNest", j = "Visual",rmax=2000) 
+   
+seehear <-  PAC.ppp |>  envelope(Kcross, i = "ActiveNest", j = "SeenAndHeard",rmax=2000) 
+
+poop <-   PAC.ppp |>  envelope(Kcross, i = "ActiveNest", j = "Whitewash",rmax=2000) 
+
+inactive <-   PAC.ppp |>  envelope(Kcross, i = "ActiveNest", j = "InactiveNest",rmax=2000) 
+
+```
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+plot(feathers, main="Correlation of Molted feathers\n with active Nests",xlab="Distance (meters)") 
+plot(prey, main="Correlation of Prey Remains \n with Active Nests",xlab="Distance (meters)") 
+plot(audio, main="Correlation of Northern Goshawk \n Calls with Active Nests",xlab="Distance (meters)") 
+plot(visual, main="Correlation of Northern Goshawk \n Sightings with Active Nests",xlab="Distance (meters)") 
+plot(seehear, main="Correlation of Northern Goshawk \n  Sightings AND Calls with Active Nests",xlab="Distance (meters)") 
+plot(poop, main="Correlation of Whitewash \n with Active Nests",xlab="Distance (meters)") 
+plot(inactive, main="Correlation of Inactive Nests \n with Active Nests",xlab="Distance (meters)") 
+```
+
+### Conclusions and Reflections:
+
+##### Looking at our 7 different variables, we can see that by and large *most* of our indicator variables have a notable sense of correlatory attraction to active nests, with the exception of visible sightings and inactive nests (to an extent). If we had to choose a 'most indicitive' variable, we see the strongest attraction within tens of meters to an active nest with molted feathers, with whitewash, prey remains, and sighting + auditory combination quickly behind. All of these are present notable atteraction out to a roughly 500-1000 meter radius before transitioning to pure randomness. Goshawk call observation (auditory) are similarly attractive, just rising slower than the others. These results make a lot of sense, and match nicely with the visual presentation in our map. Feathers would be expected to be concentrated near the nest due to the amount of time they spend there. Furthermore, they are very protecteive of their nests both flying around and screaming at those who get too close, so it makes sense that they would be both seen + heard near nests. They also have a very distinctive call, making auditory identification easy. It's important to remember, however, that this is still observational data so causation cannot be drawn.
+
+##### As for our non-attractive variables, Inactive nests show a slight attraction at very short distances but quickly fade to just randomness, likely because the habitat is good for nesting but the past inhabitants have moved on. There is also limited data for this category, which makes testing harder. Unlike the other variables goshawk sightings seem to be largely random at all distances, perhaps due to large flight ranges. Some models peak out of the envelope into attraction for brief moments, but not enough for us to confidently see any correlation.
+
+##### We spent a lot of our time in the analysis stage trying to figure out what bounds would most accurately represent the data, ultimately settling on the PACs. What we realized, though, is that despite the much more accurate location data, some of the PACs had little to no observations! After consulting a team member, we learned that there were some PACs that were not able to be visited due to factors including forest fire, presence of bears, lack of time, and covert drug operations. If we had more time to mess around with this data we would reach out to more study leaders and thoroughly comb through all the PACs to remove those that weren't actually visited. This would even out our density plots and increase the accuracy of our K cross tests.
+
+#### Bonus Density Test!
+
+##### Due to us Recieving the PAC we did want to at least try doing a density test, now that we are closer to the realm of properly bound data. There are still some questions of which PACs were surveyed, and how evenly they were surveyed, but due to time constraints and lack of communication to study leaders, we decided to just do an inhomogenous test, as this should account for some of those inequites. This test is mostly just a fun exploratory graph, and while we feel reasonably confident in the results, we would likely do much more to ensure its accuracy if we could.
+
+```{r,echo=FALSE}
+par(mfrow=c(1,1))  
+plot(density(PAC.ppp,adjust = 1)*1000^2,main="# of Goshawk observations per sq. km.", X="boo")
+points(PAC.ppp, pch = ".", col = "black",cex=3)
+
+```
+
+```{r,include=FALSE}
+pactest <- PAC.ppp |> envelope(Kinhom)
+```
+
+```{r,echo=FALSE}
+plot(pactest, main="Assortment of All Goshawk Observation data \n in the Stanislaus Forest PACs",xlab="Distance (meters)")
+```
+
+##### As was largely expected, we see a (light, but notable) attraction within \~1000 meters distance, before it transitions to randomness - and then newly transtitions to a notable repelling 'regular' spacing after \~3000 meters. This makes a lot of sense, as while the observations will cluster with nests, due to the territorial nature of the birds the nests themselves will be spaced out, and the clustering observations should also follow this, causing a repelling trend at large distances-- which we do in fact see here!
+
+### Acknowledgements:
+
+#### We would like to thank Dr. Boehm Vock for her patient expertise and assistance on our project. We would also like to thank Lynn Schofield, Visiting Intructor of Biology at St. Olaf and staff Biologist at the Institute for Bird Populations for providing data and answering our many questions.
+
+<https://data.fs.usda.gov/geodata/edw/datasets.php?dsetCategory=boundaries>
+
+Additional Information from: <https://www.allaboutbirds.org/news/the-basics-feather-molt/>
+
+<https://www.allaboutbirds.org/guide/American_Goshawk/overview>
