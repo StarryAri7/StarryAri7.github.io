@@ -4,7 +4,7 @@ project:
   
 # ~ additional metadata excluded for brevity ~
 website:
-  title: "StarryAri7.github.io"
+  title: "Aria's Little Corner of the (spider)Web"
   navbar:
     left:
       - href: index.qmd

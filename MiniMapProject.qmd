@@ -8,6 +8,10 @@ editor_options:
 ---
 
 ```{r}
+#| include: FALSE
+#| warning: FALSE
+
+
 library(tidyverse) #for data manipulation
 library(leaflet) #for interactive mapping
 library(ggspatial) #for mapping
@@ -16,6 +20,10 @@ library(ggthemes) #for setting my static maps design
 ```
 
 ```{r}
+#| include: FALSE
+#| warning: FALSE
+
+
 #State Boundaries
 states_sf <- read_sf("https://rstudio.github.io/leaflet/json/us-states.geojson") |>
   select(name, geometry)
@@ -46,7 +54,16 @@ birdsstates <- states_sf |> left_join(birds, by = c("name" = "State"))
 # The website is interesting, but I double checked the data!
 ```
 
+
+### Alt-text / Description
+**This is a chloropleth map of the United States of America, the X and Y axis are longitude and latitude, respectively. Alaska and Hawaii have been moved to the bottom left of the map for clarity of sight. Each state is filled with a color based on the percentage of change in federal land from 1990 to 2018. They range from -20% (a decrease in federal land) to 193% (a large increase in federal land). The biggest takeaway is that the majority of states have changed no more than 5% in the positive or negative direction. the pacific northwest seems to have gained land slightly, while the southwest states have all lost land, with Arizona having decreased the most in the country. The eastern side of the US, has largely made gains from 1% up to 70% in Maine.**
+
+
+*Static Plot*
 ```{r}
+#| echo: FALSE
+#| warning: FALSE
+
 
 # For my static map I really wanted to find a way to include Alaska and Hawaii, 
 # this leads to some strange/redundant looking code at times
@@ -151,13 +168,70 @@ mainland2 +
 
 ```
 
-# Alt-text / Description
+*Interactive Plot*
+```{r}
+#| echo: FALSE
+#| warning: FALSE
 
-**This is a chloropleth map of the United States of America, the X and Y axis are longitude and latitude, respectively. Alaska and Hawaii have been moved to the bottom left of the map for clarity of sight. Each state is filled with a color based on the percentage of change in federal land from 1990 to 2018. They range from -20% (a decrease in federal land) to 193% (a large increase in federal land). The biggest takeaway is that the majority of states have changed no more than 5% in the positive or negative direction. the pacific northwest seems to have gained land slightly, while the southwest states have all lost land, with Arizona having decreased the most in the country. The eastern side of the US, has largely made gains from 1% up to 70% in Maine.**
 
+# Same issue with Na's
+publicland <- publicland |> drop_na(change_1990)
+
+# Here I set the bins for legend, and the color scale
+bins <- c(-20,-15,-10,-5,0,5,30,50,200)
+  pal2 <- colorBin("BrBG",
+                   bins = bins )
+
+
+  
+publicland |> 
+  leaflet() |> 
+  addProviderTiles("OpenStreetMap") |>
+  # Same view
+  setView(-96, 50, 2) |>
+  # Sets the polygons, same setup as last time
+  addPolygons(fillColor = ~pal2(change_1990),
+              weight = 2,
+              opacity = 1,
+              color = "white",
+              dashArray = "5",
+              fillOpacity = .8,
+              highlightOptions = highlightOptions(
+                weight = 5,
+                color = "#666",
+                dashArray = "",
+                fillOpacity = 0.8,
+                bringToFront = TRUE),
+              # Same custom label set up
+              label = publicland$label,
+    labelOptions = labelOptions(
+      style = list("font-weight" = "normal", padding = "3px 15px"),
+      textsize = "15px",
+      direction = "auto")) |>
+  # I have to admit the negative numbers look really messy, but I'm not sure of
+  # another way to do it I would love it to be '-20 to -15' etc.
+  addLegend(pal = pal2, 
+            values = ~change_1990, 
+            title = "% Change",
+            position = "bottomright",
+            opacity=.8) |>
+  # Same Title Setup
+      addPopups(-95, 50, "% Change in Public Land from 1990 - 2018",
+              options = popupOptions(closeOnClick = FALSE)) |>
+  # And you just have to have that scale bar 
+  # (this also helps if you remove the above line, adds a pipe catch)
+  addScaleBar(position = "bottomleft") 
+```
+
+
+### Description
+**A major insight from this map is that many regions of states choose birds within the same family, implying that bird likely lives within that area. this is especially true of the Icteridae (Meadow larks) in the great plains, Mimidae (mocking birds) in the south east, and Cardinalidae (Cardinals) in the central eastern region. All 3 of these birds have high concentrations in these areas, so their states seem to have chosen a local bird that they feel represents them.**
+
+*Static Plot*
 ```{r}
 #| fig-width: 10
 #| fig-height: 5
+#| echo: FALSE
 
 # This is by and large the same technique as last time, so I will only
 # highlight how the code changes here
@@ -284,9 +358,10 @@ bird_mainland +
 # viewer, so I elected to keep it
 ```
 
-**A major insight from this map is that many regions of states choose birds within the same family, implying that bird likely lives within that area. this is especially true of the Icteridae (Meadow larks) in the great plains, Mimidae (mocking birds) in the south east, and Cardinalidae (Cardinals) in the central eastern region. All 3 of these birds have high concentrations in these areas, so their states seem to have chosen a local bird that they feel represents them.**
-
+*Interactive Plot*
 ```{r}
+#| echo: FALSE
+#| warning: FALSE
 
 #I had some issues with NA's in this leaflet so I removed them all at the start
 birdsstates <- birdsstates |> drop_na(family)
@@ -358,53 +433,4 @@ birdsstates |>
   addScaleBar(position = "bottomleft")
 ```
 
-```{r}
 
-# Same issue with Na's
-publicland <- publicland |> drop_na(change_1990)
-
-# Here I set the bins for legend, and the color scale
-bins <- c(-20,-15,-10,-5,0,5,30,50,200)
-  pal2 <- colorBin("BrBG",
-                   bins = bins )
-
-
-  
-publicland |> 
-  leaflet() |> 
-  addProviderTiles("OpenStreetMap") |>
-  # Same view
-  setView(-96, 50, 2) |>
-  # Sets the polygons, same setup as last time
-  addPolygons(fillColor = ~pal2(change_1990),
-              weight = 2,
-              opacity = 1,
-              color = "white",
-              dashArray = "5",
-              fillOpacity = .8,
-              highlightOptions = highlightOptions(
-                weight = 5,
-                color = "#666",
-                dashArray = "",
-                fillOpacity = 0.8,
-                bringToFront = TRUE),
-              # Same custom label set up
-              label = publicland$label,
-    labelOptions = labelOptions(
-      style = list("font-weight" = "normal", padding = "3px 15px"),
-      textsize = "15px",
-      direction = "auto")) |>
-  # I have to admit the negative numbers look really messy, but I'm not sure of
-  # another way to do it I would love it to be '-20 to -15' etc.
-  addLegend(pal = pal2, 
-            values = ~change_1990, 
-            title = "% Change",
-            position = "bottomright",
-            opacity=.8) |>
-  # Same Title Setup
-      addPopups(-95, 50, "% Change in Public Land from 1990 - 2018",
-              options = popupOptions(closeOnClick = FALSE)) |>
-  # And you just have to have that scale bar 
-  # (this also helps if you remove the above line, adds a pipe catch)
-  addScaleBar(position = "bottomleft") 
-```
