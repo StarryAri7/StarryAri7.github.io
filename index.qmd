@@ -3,6 +3,7 @@ title: "Aria's Website!"
 image: me.JPG
 about:
   template: trestles
+  image-shape: rounded
   links: 
       - icon: github
         text: GitHub
