@@ -35,7 +35,7 @@ library(spData)
 
 ```{r,include=FALSE}
 goshawks_sf <- read_sf("~/1R_Important/StarryAri7.github.io/data/Goshawks Data/All_NOGO_Observations.shp")
-NatFors_sf <- read_sf("~/1R_Important/StarryAri7.github.io/data/Forest Data/S_USA.AdministrativeForest.shp")
+NatFors_sf <- read_sf("~/1R_Important/StarryAri7.github.io/data/Forests/USA.AdministrativeForest.shp")
 PACBound <- read_sf("~/1R_Important/StarryAri7.github.io/data/PAC Data/NOGO_Search_Areas_PACs.shp")
 data(us_states)
 ```
@@ -48,10 +48,12 @@ data(us_states)
 
  MGosObs<- goshawks_sf|> st_transform(32610)
 
+
 StanBoundFors <- NatFors_sf |>
   filter(FORESTNAME == "Stanislaus National Forest")
 PlumBoundFors <- NatFors_sf |>
    filter(FORESTNAME == "Plumas National Forest")
+
 
 MGosObs <- MGosObs |> 
   relocate(Obs_Type, .before=Forest)
