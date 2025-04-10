@@ -3,6 +3,11 @@ title: "Aria's Website!"
 image: me.JPG
 about:
   template: trestles
+  links: 
+      - icon: github
+        text: GitHub
+        href: https://github.com/StarryAri7
+        target: _blank
 ---
 
 This is a Quarto website.

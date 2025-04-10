@@ -1,0 +1,19 @@
+/*-- scss:defaults --*/
+
+// Colors
+$green: #90A38E;
+$bluey: #5185AA;
+$pink: #F3DBF2;
+$shell: #F8F5EF;
+$blue: #0A122A;
+$gray: #E8E6E1;
+
+
+// Base document colors
+$navbar-bg: $green; // navbar
+$navbar-fg: $shell; // navbar foreground elements
+$navbar-hl: $pink; // highlight color when hovering over navbar links
+$body-bg: $shell; // page background 
+$body-color: $blue; // page text 
+$footer-bg: $gray; // footer 
+$link-color: $bluey; // hyperlinks 
