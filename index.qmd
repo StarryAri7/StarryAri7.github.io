@@ -20,3 +20,5 @@ To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
 ```
 
 Build, commit, push
+
+cross your fingers everyone, were going for a ride!
