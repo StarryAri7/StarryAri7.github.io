@@ -348,11 +348,11 @@ points(PAC.ppp, pch = ".", col = "black",cex=3)
 ```
 
 ```{r,include=FALSE}
-# pactest <- PAC.ppp |> envelope(Kinhom)
+ pactest <- PAC.ppp |> envelope(Kinhom)
 ```
 
 ```{r,echo=FALSE}
-# plot(pactest, main="Assortment of All Goshawk Observation data \n in the Stanislaus Forest PACs",xlab="Distance (meters)")
+ plot(pactest, main="Assortment of All Goshawk Observation data \n in the Stanislaus Forest PACs",xlab="Distance (meters)")
 ```
 
 ##### As was largely expected, we see a (light, but notable) attraction within \~1000 meters distance, before it transitions to randomness - and then newly transtitions to a notable repelling 'regular' spacing after \~3000 meters. This makes a lot of sense, as while the observations will cluster with nests, due to the territorial nature of the birds the nests themselves will be spaced out, and the clustering observations should also follow this, causing a repelling trend at large distances-- which we do in fact see here!
