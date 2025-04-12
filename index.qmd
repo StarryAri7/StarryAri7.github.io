@@ -9,16 +9,14 @@ about:
         text: GitHub
         href: https://github.com/StarryAri7
         target: _blank
+      - icon: envelope
+        text: Email me!
+        href: mailto:whalen4@stolaf.edu
+        target: _blank
 ---
 
-This is a Quarto website.
+I really like R, and you should too! 
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Learn more about me in "About Aria!"
 
-```{r}
-1 + 1
-```
-
-Build, commit, push
-
-cross your fingers everyone, were going for a ride!
+Checkout my mini projects from Data Science 2 in "Mini Projects" and my larger final projects in "Major Projects"

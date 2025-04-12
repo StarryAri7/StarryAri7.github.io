@@ -1,10 +1,8 @@
 {
-  "hash": "27706b9650464bf633077751e651bf1b",
+  "hash": "a5236a6c7000d0c6df6fba7a9a01b3a7",
   "result": {
-    "markdown": "---\ntitle: \"Aria's Website!\"\nimage: media/me.JPG\nabout:\n  template: trestles\n  image-shape: rounded\n  links: \n      - icon: github\n        text: GitHub\n        href: https://github.com/StarryAri7\n        target: _blank\n---\n\n\nThis is a Quarto website.\n\nTo learn more about Quarto websites visit <https://quarto.org/docs/websites>.\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::\n\n\nBuild, commit, push\n\ncross your fingers everyone, were going for a ride!",
-    "supporting": [
-      "index_files"
-    ],
+    "markdown": "---\ntitle: \"Aria's Website!\"\nimage: media/me.JPG\nabout:\n  template: trestles\n  image-shape: rounded\n  links: \n      - icon: github\n        text: GitHub\n        href: https://github.com/StarryAri7\n        target: _blank\n      - icon: envelope\n        text: Email me!\n        href: mailto:whalen4@stolaf.edu\n        target: _blank\n---\n\n\nThis is a Quarto website.\n\nTo learn more about Quarto websites visit <https://quarto.org/docs/websites>.\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n```\n[1] 2\n```\n:::\n:::\n\n\nBuild, commit, push\n\ncross your fingers everyone, were going for a ride!",
+    "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"
     ],
