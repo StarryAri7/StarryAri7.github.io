@@ -1,6 +1,6 @@
 ---
 title: "Aria's Website!"
-image: me.JPG
+image: media/me.JPG
 about:
   template: trestles
   image-shape: rounded

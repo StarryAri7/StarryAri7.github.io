@@ -17,3 +17,20 @@ $body-bg: $shell; // page background
 $body-color: $blue; // page text 
 $footer-bg: $gray; // footer 
 $link-color: $bluey; // hyperlinks 
+
+
+// Rounds Images
+.rounded-img {
+  border-radius: 15px;
+}
+
+// Centers Images
+img {
+  display: block;
+  margin: 1rem auto;
+}
+
+// centers text
+.center-text {
+  text-align: center;
+}

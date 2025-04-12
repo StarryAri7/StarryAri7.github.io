@@ -22,9 +22,6 @@ website:
             href: Goshawks_Pres.Rmd
           - text: "Analysis of Salmon Stomach Contents"
             href: salmon_tummys.Rmd
-          
-
-
 
 format:
   html:
@@ -38,3 +35,5 @@ editor: visual
 
 execute:
   freeze: auto
+  
+  
