@@ -19,22 +19,17 @@ library(jsonlite)
 library(tidytext)
 library(textdata)
 library(wordcloud)
-library(wordcloud2)
-library(viridis)
 library(ggthemes)
+library(kableExtra)
 ```
 
 
+
 ```{r}
-#| eval: FALSE
 data <- read_json("https://github.com/leinstay/steamdb/raw/refs/heads/main/steamdb.json")
 
 
 data2 <- as.data.frame(do.call(rbind, data))
-
-
- str_view(data2$name, "\\w* \\d\\b") |> print(n=Inf) 
- str_view(data2$name, "")
  
  
  data2 <- data2 |> separate_wider_delim(published_store, delim = "-",
@@ -44,33 +39,88 @@ data2 <- as.data.frame(do.call(rbind, data))
  
  
 ```{r}
-#| eval: FALSE
- data2 |> drop_na(publishedyear) |> 
-   filter(publishedyear > 2006,
-          publishedyear != "NULL") |>
-   mutate(sequel = str_detect(name, "\\w* \\d\\d?\\b")) |> 
-   group_by(publishedyear) |> summarize(num_sequel = sum(sequel),
-                                        num_total = n(),
-                                        prop_sequel = mean(sequel)) |> print(n=100)
 
  data2 |> drop_na(publishedyear) |> 
    filter(publishedyear > 2006,
           publishedyear != "NULL") |>
-   mutate(sequel = str_detect(name, "(..).*\\1 ")) 
+   mutate(sequel = str_detect(name, "\\w* \\d\\d?\\b")) |> 
+   group_by(publishedyear) |> 
+   summarize("Number of Sequels" = sum(sequel),
+            "Total Games" = n(),
+            "Proportion are Sequels" = mean(sequel)) |> print(n=100) |>
+   kable(digits=3) |>
+   kable_styling(bootstrap_options = "striped", full_width = FALSE,
+                 position = "float_right")
+
+ data2 |>
+  select(name, publishers) |>
+  filter(str_detect(name, "^(..\\w*) +.* *\\1+$")) |>
+  arrange(desc(publishers)) |>
+  kable() |>
+  kable_styling(bootstrap_options = "striped", full_width = FALSE, position = "float_right")
  
+ 
+ data2 |> select(name, full_price, meta_score) |> 
+   mutate(words_in_name = str_count(name,"\\b[^ ]+\\b"),
+          full_price = str_replace(full_price, "NULL", "0"),
+          full_price = as.numeric(full_price),
+          full_price = full_price/100) |>
+   filter(full_price < 300) |>
+   ggplot(aes(x = words_in_name, y = full_price)) + geom_point(alpha = .1) +
+   geom_smooth(method = lm) +
+   theme_clean()
+   
+ 
+pricedata <- data2 |> select(name, full_price) |> 
+   mutate(words_in_name = str_count(name,"\\b[^ ]+\\b"),
+          full_price = str_replace(full_price, "NULL", "0"),
+          full_price = as.numeric(full_price),
+          full_price = full_price/100) |>
+   filter(full_price < 300)
   
- str_subset(data2$name, "(..\\w*) \\1")
+summary(lm(full_price ~ words_in_name, data = pricedata))
  
-   group_by(publishedyear) |> summarize(num_sequel = sum(sequel),
-                                        num_total = n(),
-                                        prop_sequel = mean(sequel)) |> print(n=100)
+ 
+ 
+ 
+ data2 |> select(languages, publishedyear, full_price) |>
+   mutate(num_commas = str_count(languages,","),
+          num_languages = num_commas + 1,
+          publishedyear = as.numeric(publishedyear),
+          full_price = str_replace(full_price, "NULL", "0"),
+          full_price = as.numeric(full_price),
+          full_price = full_price/100) |>
+   filter(full_price == 59.99) |>
+   group_by(publishedyear) |>
+   summarize(avg_language = mean(num_languages)) |>
+   filter(publishedyear > 2006) |>
+   kable(digits = 1) |>
+   kable_styling(bootstrap_options = "striped", full_width = FALSE,
+                 position = "float_right")
+ 
+ 
+  data2 |> 
+   mutate(words_in_name = str_count(name,"\\b[^ ]+\\b"),
+          num_commas = str_count(languages,","),
+          num_languages = num_commas + 1,
+          publishedyear = as.numeric(publishedyear),
+          full_price = str_replace(full_price, "NULL", "0"),
+          full_price = as.numeric(full_price),
+          full_price = full_price/100) |>
+   group_by(publishedyear) |>
+   summarize(avg_words = mean(words_in_name)) |>
+   filter(publishedyear > 2006) |>
+   kable(digits = 1) |>
+   kable_styling(bootstrap_options = "striped", full_width = FALSE,
+                 position = "float_right")
+ 
 
 ```
 
  
 
 ```{r}
-#| eval: FALSE
+
 #the json data waas very broken, not sure if these count as strings and regular expressions for my 3, but basically i'm just tricking r into turning into proper text
  descriptions <- data2 |> 
    mutate(names = str_extract(name, ".*"),
@@ -118,7 +168,7 @@ tidy_descriptions |>
 ```
  
 ```{r}
-#| eval: FALSE
+
 words <- tidy_descriptions |>
   anti_join(stop_words) |>
   anti_join(font_stopwords) |>

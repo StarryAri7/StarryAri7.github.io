@@ -96,6 +96,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -244,110 +247,963 @@ The following object is masked from 'package:purrr':
 <div class="cell-output cell-output-stderr">
 <pre><code>Loading required package: RColorBrewer</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(wordcloud2)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(viridis)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Loading required package: viridisLite</code></pre>
+<pre><code>
+Attaching package: 'kableExtra'
+
+The following object is masked from 'package:dplyr':
+
+    group_rows</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggthemes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_json</span>(<span class="st">"https://github.com/leinstay/steamdb/raw/refs/heads/main/steamdb.json"</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">do.call</span>(rbind, data))</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a> <span class="fu">str_view</span>(data2<span class="sc">$</span>name, <span class="st">"</span><span class="sc">\\</span><span class="st">w* </span><span class="sc">\\</span><span class="st">d</span><span class="sc">\\</span><span class="st">b"</span>) <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="cn">Inf</span>) </span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a> <span class="fu">str_view</span>(data2<span class="sc">$</span>name, <span class="st">""</span>)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a> data2 <span class="ot">&lt;-</span> data2 <span class="sc">|&gt;</span> <span class="fu">separate_wider_delim</span>(published_store, <span class="at">delim =</span> <span class="st">"-"</span>,</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>          <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"publishedyear"</span>, <span class="st">"publishedmonth"</span>, <span class="st">"publishedday"</span>), <span class="at">too_few =</span> <span class="st">"debug"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a> data2 <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(publishedyear) <span class="sc">|&gt;</span> </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(publishedyear <span class="sc">&gt;</span> <span class="dv">2006</span>,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>          publishedyear <span class="sc">!=</span> <span class="st">"NULL"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">sequel =</span> <span class="fu">str_detect</span>(name, <span class="st">"</span><span class="sc">\\</span><span class="st">w* </span><span class="sc">\\</span><span class="st">d</span><span class="sc">\\</span><span class="st">d?</span><span class="sc">\\</span><span class="st">b"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(publishedyear) <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">num_sequel =</span> <span class="fu">sum</span>(sequel),</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">num_total =</span> <span class="fu">n</span>(),</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">prop_sequel =</span> <span class="fu">mean</span>(sequel)) <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">100</span>)</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a> data2 <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(publishedyear) <span class="sc">|&gt;</span> </span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(publishedyear <span class="sc">&gt;</span> <span class="dv">2006</span>,</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>          publishedyear <span class="sc">!=</span> <span class="st">"NULL"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">sequel =</span> <span class="fu">str_detect</span>(name, <span class="st">"(..).*</span><span class="sc">\\</span><span class="st">1 "</span>)) </span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a> <span class="fu">str_subset</span>(data2<span class="sc">$</span>name, <span class="st">"(..</span><span class="sc">\\</span><span class="st">w*) </span><span class="sc">\\</span><span class="st">1"</span>)</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(publishedyear) <span class="sc">|&gt;</span> <span class="fu">summarize</span>(<span class="at">num_sequel =</span> <span class="fu">sum</span>(sequel),</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">num_total =</span> <span class="fu">n</span>(),</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>                                        <span class="at">prop_sequel =</span> <span class="fu">mean</span>(sequel)) <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_json</span>(<span class="st">"https://github.com/leinstay/steamdb/raw/refs/heads/main/steamdb.json"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>data2 <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">do.call</span>(rbind, data))</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a> data2 <span class="ot">&lt;-</span> data2 <span class="sc">|&gt;</span> <span class="fu">separate_wider_delim</span>(published_store, <span class="at">delim =</span> <span class="st">"-"</span>,</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"publishedyear"</span>, <span class="st">"publishedmonth"</span>, <span class="st">"publishedday"</span>), <span class="at">too_few =</span> <span class="st">"debug"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in stri_split_fixed(string, pattern, n = n, simplify = simplify, :
+argument is not an atomic vector; coercing</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Debug mode activated: adding variables `published_store_ok`,
+`published_store_pieces`, and `published_store_remainder`.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in stri_locate_all_fixed(string, pattern, omit_no_match = TRUE, :
+argument is not an atomic vector; coercing</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in stri_sub(string, from = start, to = end): argument is not an atomic
+vector; coercing</code></pre>
+</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#the json data waas very broken, not sure if these count as strings and regular expressions for my 3, but basically i'm just tricking r into turning into proper text</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a> descriptions <span class="ot">&lt;-</span> data2 <span class="sc">|&gt;</span> </span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">names =</span> <span class="fu">str_extract</span>(name, <span class="st">".*"</span>),</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">descriptions =</span> <span class="fu">str_extract</span>(description, <span class="st">".*"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">select</span>(descriptions, names, publishedyear)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a> tidy_descriptions <span class="ot">&lt;-</span> descriptions <span class="sc">|&gt;</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">line =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, descriptions, <span class="at">token =</span> <span class="st">"words"</span>)</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>   </span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>smart_stopwords <span class="ot">&lt;-</span> <span class="fu">get_stopwords</span>(<span class="at">source =</span> <span class="st">"smart"</span>)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>font_stopwords <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">word =</span> <span class="fu">c</span>(<span class="st">"br"</span>,<span class="st">"li"</span>,<span class="st">"strong"</span>,<span class="st">"ul"</span>,<span class="st">"quot"</span>, <span class="st">"game"</span>), </span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">lexicon =</span> <span class="st">"font"</span>)</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="co">#top 20 words of all times</span></span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>tidy_descriptions <span class="sc">|&gt;</span></span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(publishedyear <span class="sc">!=</span> <span class="st">"NULL"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(smart_stopwords) <span class="sc">|&gt;</span></span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(font_stopwords) <span class="sc">|&gt;</span></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word <span class="sc">!=</span> <span class="st">"NA"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(n, <span class="at">n =</span> <span class="dv">20</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">fct_reorder</span>(word, n), n)) <span class="sc">+</span></span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a><span class="co">#top 10 word for each year (I tried so hard to order them for each year but it doesn't work )</span></span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>tidy_descriptions <span class="sc">|&gt;</span></span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(publishedyear <span class="sc">!=</span> <span class="st">"NULL"</span>,</span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>          publishedyear <span class="sc">&gt;</span> <span class="dv">2006</span>) <span class="sc">|&gt;</span></span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(smart_stopwords) <span class="sc">|&gt;</span></span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(font_stopwords) <span class="sc">|&gt;</span></span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(publishedyear, word) <span class="sc">|&gt;</span></span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n =</span><span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(publishedyear, <span class="fu">desc</span>(n)) <span class="sc">|&gt;</span></span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(n, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">fct_reorder</span>(word, n), n, <span class="at">fill =</span> publishedyear)) <span class="sc">+</span></span>
-<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
-<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> publishedyear, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a> data2 <span class="sc">|&gt;</span> <span class="fu">drop_na</span>(publishedyear) <span class="sc">|&gt;</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(publishedyear <span class="sc">&gt;</span> <span class="dv">2006</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>          publishedyear <span class="sc">!=</span> <span class="st">"NULL"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">sequel =</span> <span class="fu">str_detect</span>(name, <span class="st">"</span><span class="sc">\\</span><span class="st">w* </span><span class="sc">\\</span><span class="st">d</span><span class="sc">\\</span><span class="st">d?</span><span class="sc">\\</span><span class="st">b"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(publishedyear) <span class="sc">|&gt;</span> </span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">summarize</span>(<span class="st">"Number of Sequels"</span> <span class="ot">=</span> <span class="fu">sum</span>(sequel),</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Total Games"</span> <span class="ot">=</span> <span class="fu">n</span>(),</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Proportion are Sequels"</span> <span class="ot">=</span> <span class="fu">mean</span>(sequel)) <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n=</span><span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">kable</span>(<span class="at">digits=</span><span class="dv">3</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>   <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="st">"striped"</span>, <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>                 <span class="at">position =</span> <span class="st">"float_right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16 × 4
+   publishedyear `Number of Sequels` `Total Games` `Proportion are Sequels`
+   &lt;chr&gt;                       &lt;int&gt;         &lt;int&gt;                    &lt;dbl&gt;
+ 1 2007                           17           106                   0.160 
+ 2 2008                           25           167                   0.150 
+ 3 2009                           52           332                   0.157 
+ 4 2010                           36           280                   0.129 
+ 5 2011                           35           281                   0.125 
+ 6 2012                           45           342                   0.132 
+ 7 2013                           57           475                   0.12  
+ 8 2014                          167          1589                   0.105 
+ 9 2015                          177          2635                   0.0672
+10 2016                          243          4312                   0.0564
+11 2017                          350          6232                   0.0562
+12 2018                          395          8169                   0.0484
+13 2019                          428          8014                   0.0534
+14 2020                          511          9636                   0.0530
+15 2021                          433          7886                   0.0549
+16 2022                          183          3283                   0.0557</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-striped table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">publishedyear</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Number of Sequels</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Total Games</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Proportion are Sequels</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2007</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">106</td>
+<td style="text-align: right;">0.160</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2008</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">0.150</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2009</td>
+<td style="text-align: right;">52</td>
+<td style="text-align: right;">332</td>
+<td style="text-align: right;">0.157</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2010</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">280</td>
+<td style="text-align: right;">0.129</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2011</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">0.125</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2012</td>
+<td style="text-align: right;">45</td>
+<td style="text-align: right;">342</td>
+<td style="text-align: right;">0.132</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2013</td>
+<td style="text-align: right;">57</td>
+<td style="text-align: right;">475</td>
+<td style="text-align: right;">0.120</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2014</td>
+<td style="text-align: right;">167</td>
+<td style="text-align: right;">1589</td>
+<td style="text-align: right;">0.105</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2015</td>
+<td style="text-align: right;">177</td>
+<td style="text-align: right;">2635</td>
+<td style="text-align: right;">0.067</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2016</td>
+<td style="text-align: right;">243</td>
+<td style="text-align: right;">4312</td>
+<td style="text-align: right;">0.056</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2017</td>
+<td style="text-align: right;">350</td>
+<td style="text-align: right;">6232</td>
+<td style="text-align: right;">0.056</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2018</td>
+<td style="text-align: right;">395</td>
+<td style="text-align: right;">8169</td>
+<td style="text-align: right;">0.048</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2019</td>
+<td style="text-align: right;">428</td>
+<td style="text-align: right;">8014</td>
+<td style="text-align: right;">0.053</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2020</td>
+<td style="text-align: right;">511</td>
+<td style="text-align: right;">9636</td>
+<td style="text-align: right;">0.053</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2021</td>
+<td style="text-align: right;">433</td>
+<td style="text-align: right;">7886</td>
+<td style="text-align: right;">0.055</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2022</td>
+<td style="text-align: right;">183</td>
+<td style="text-align: right;">3283</td>
+<td style="text-align: right;">0.056</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a> data2 <span class="sc">|&gt;</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(name, publishers) <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(name, <span class="st">"^(..</span><span class="sc">\\</span><span class="st">w*) +.* *</span><span class="sc">\\</span><span class="st">1+$"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(publishers)) <span class="sc">|&gt;</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>() <span class="sc">|&gt;</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="st">"striped"</span>, <span class="at">full_width =</span> <span class="cn">FALSE</span>, <span class="at">position =</span> <span class="st">"float_right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-striped table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">name</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">publishers</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Bad Bad</td>
+<td style="text-align: left;">3000Studio</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">One By One</td>
+<td style="text-align: left;">玫瑰工作室 |</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Run Girls Run</td>
+<td style="text-align: left;">?</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Army To Army</td>
+<td style="text-align: left;">Piece Of Voxel</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hunter A Hunter</td>
+<td style="text-align: left;">Ragent Sdn Bhd</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wall to Wall</td>
+<td style="text-align: left;">beats rolls</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Stalks Stalks Stalks</td>
+<td style="text-align: left;">Glacial Lake Studios</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Day After Day</td>
+<td style="text-align: left;">Kielek577</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dice vs Dice</td>
+<td style="text-align: left;">Vulpis Yazilim</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Race - Total Toon Race</td>
+<td style="text-align: left;">Andreas Otten</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Day Repeat Day</td>
+<td style="text-align: left;">Kimmo Factor Oy</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Home Designer - Home Sweet Home</td>
+<td style="text-align: left;">HH-Games</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wind Wind</td>
+<td style="text-align: left;">ELIOT</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Run Ralph Run</td>
+<td style="text-align: left;">Dnovel</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Complex Complex</td>
+<td style="text-align: left;">Blaze Epic</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dungeon No Dungeon</td>
+<td style="text-align: left;">302 Studio</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Keep the Keep</td>
+<td style="text-align: left;">Nebulate.me</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">LeHweng LeHweng</td>
+<td style="text-align: left;">soniczwa</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gurney to Gurney</td>
+<td style="text-align: left;">Lucky Games</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VR Zeppelin Airship Trips: Flying hotel experiences in VR</td>
+<td style="text-align: left;">William at Oxford</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Truck Truck</td>
+<td style="text-align: left;">Truck Truck hede</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">August of August</td>
+<td style="text-align: left;">Fireworks Garland</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Run Dummy Run</td>
+<td style="text-align: left;">ImperiumGame</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Train Train Train</td>
+<td style="text-align: left;">heinn</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">War War</td>
+<td style="text-align: left;">Verto Studio LLC</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Fly You Fly</td>
+<td style="text-align: left;">Indiedog Games</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Way of Boy: Another Way</td>
+<td style="text-align: left;">FDRAGONS</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Batu Ta Batu</td>
+<td style="text-align: left;">2Awesome Studio</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Space Raiders in Space</td>
+<td style="text-align: left;">Destructive Creations</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bock Bock</td>
+<td style="text-align: left;">Ben Fitzpatrick</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Time To Stop Time</td>
+<td style="text-align: left;">CreativeForge Games</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Paw Paw Paw</td>
+<td style="text-align: left;">GrabTheGames</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Neko Neko</td>
+<td style="text-align: left;">Neko Game</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RUN HARE RUN</td>
+<td style="text-align: left;">khukhrovr</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Space Space</td>
+<td style="text-align: left;">Gino Di Pierro</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Creme de la Creme</td>
+<td style="text-align: left;">Choice of Games</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Brother Brother</td>
+<td style="text-align: left;">None</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">YUT YUT</td>
+<td style="text-align: left;">Benjamin Nielsen</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mi Mi Mi</td>
+<td style="text-align: left;">IR Studio</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Boon Boon</td>
+<td style="text-align: left;">Anamik Majumdar</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">love love love</td>
+<td style="text-align: left;">Tintin Game</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Piko Piko</td>
+<td style="text-align: left;">Degica</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">More and More</td>
+<td style="text-align: left;">Project_lelz</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Princess Maker Go!Go! Princess</td>
+<td style="text-align: left;">CFK Co., Ltd.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Monster X Monster</td>
+<td style="text-align: left;">VanGame</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Money Makes Money</td>
+<td style="text-align: left;">Spaghetti Code Ltd</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Space Rabbits in Space</td>
+<td style="text-align: left;">European Games Group AG</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Snake vs Snake</td>
+<td style="text-align: left;">CasualGames.nu</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Eleven Eleven</td>
+<td style="text-align: left;">Universal Studios Interactive Entertainment LLC</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Inch by Inch</td>
+<td style="text-align: left;">Dare Looks</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Run Naked Woman Run</td>
+<td style="text-align: left;">Tero Lunkka</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Swap Swap</td>
+<td style="text-align: left;">MediaPod</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Second Second</td>
+<td style="text-align: left;">Sinkhole Studio</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Juan v Juan</td>
+<td style="text-align: left;">Two Taters</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">NEO NEO</td>
+<td style="text-align: left;">Kastrye</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Up And Up</td>
+<td style="text-align: left;">Junitre Works</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Defense Task Force - Sci Fi Tower Defense</td>
+<td style="text-align: left;">ChillX Ltd</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Floor By Floor</td>
+<td style="text-align: left;">AA Games</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bump Bump Bump</td>
+<td style="text-align: left;">Golden Frog</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Run Dorothy Run</td>
+<td style="text-align: left;">Virtro Entertainment</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sos i Pie Sos</td>
+<td style="text-align: left;">Game for people</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Run Zeus Run</td>
+<td style="text-align: left;">GamerzDan</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Mixed Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Science &amp; History Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Super Heroes Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: 1980's Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Classic Rock Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Mini Mixed Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault Football Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault Baseball Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault Olympics Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault Basketball Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Boxing Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Auto Racing Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Golf Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Hockey Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Tennis Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Soccer Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Movie Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Celebrity Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: TV Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Art Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Business Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Toy Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Fashion Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Food Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trivia Vault: Literature Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Trivia Vault: Music Trivia</td>
+<td style="text-align: left;">Ripknot Systems</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sakura Sakura</td>
+<td style="text-align: left;">Sol Press</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Square x Square</td>
+<td style="text-align: left;">Pirates Of Love</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Home Sweet Home</td>
+<td style="text-align: left;">YGGDRAZIL GROUP CO.,LTD</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Volleyball Unbound - Pro Beach Volleyball</td>
+<td style="text-align: left;">Great Boolean</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Slap Village: Reality Slap</td>
+<td style="text-align: left;">MonkeyToons</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Time in Time</td>
+<td style="text-align: left;">ErayTek</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Crush Crush</td>
+<td style="text-align: left;">Sad Panda Studios</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Blush Blush</td>
+<td style="text-align: left;">Sad Panda Studios</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Party Saboteurs: After Party</td>
+<td style="text-align: left;">The Glitch Factory</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VR Karts SteamVR</td>
+<td style="text-align: left;">Viewpoint Games</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Door To Door</td>
+<td style="text-align: left;">CD Jones</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Reverse x Reverse</td>
+<td style="text-align: left;">Sekai Project</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Chalo Chalo</td>
+<td style="text-align: left;">Redshift Media,Sparpweed</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Run Rabbit Run</td>
+<td style="text-align: left;">Absolutist Ltd.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Beat Da Beat</td>
+<td style="text-align: left;">Nekki Limited</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Atlantis 2: Beyond Atlantis</td>
+<td style="text-align: left;">Microids</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Avalanche 2: Super Avalanche</td>
+<td style="text-align: left;">Midnight City</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Millennium 5 - The Battle of the Millennium</td>
+<td style="text-align: left;">Aldorlea Games</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sneaky Sneaky</td>
+<td style="text-align: left;">Naiad Entertainment LLC</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a> data2 <span class="sc">|&gt;</span> <span class="fu">select</span>(name, full_price, meta_score) <span class="sc">|&gt;</span> </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">words_in_name =</span> <span class="fu">str_count</span>(name,<span class="st">"</span><span class="sc">\\</span><span class="st">b[^ ]+</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> <span class="fu">str_replace</span>(full_price, <span class="st">"NULL"</span>, <span class="st">"0"</span>),</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> <span class="fu">as.numeric</span>(full_price),</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> full_price<span class="sc">/</span><span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(full_price <span class="sc">&lt;</span> <span class="dv">300</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> words_in_name, <span class="at">y =</span> full_price)) <span class="sc">+</span> <span class="fu">geom_point</span>(<span class="at">alpha =</span> .<span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_smooth</span>(<span class="at">method =</span> lm) <span class="sc">+</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">theme_clean</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There was 1 warning in `mutate()`.
+ℹ In argument: `full_price = str_replace(full_price, "NULL", "0")`.
+Caused by warning in `stri_replace_first_regex()`:
+! argument is not an atomic vector; coercing</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="MiniTextProject_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>pricedata <span class="ot">&lt;-</span> data2 <span class="sc">|&gt;</span> <span class="fu">select</span>(name, full_price) <span class="sc">|&gt;</span> </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">words_in_name =</span> <span class="fu">str_count</span>(name,<span class="st">"</span><span class="sc">\\</span><span class="st">b[^ ]+</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> <span class="fu">str_replace</span>(full_price, <span class="st">"NULL"</span>, <span class="st">"0"</span>),</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> <span class="fu">as.numeric</span>(full_price),</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> full_price<span class="sc">/</span><span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(full_price <span class="sc">&lt;</span> <span class="dv">300</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There was 1 warning in `mutate()`.
+ℹ In argument: `full_price = str_replace(full_price, "NULL", "0")`.
+Caused by warning in `stri_replace_first_regex()`:
+! argument is not an atomic vector; coercing</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(full_price <span class="sc">~</span> words_in_name, <span class="at">data =</span> pricedata))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = full_price ~ words_in_name, data = pricedata)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-18.297  -5.947  -2.350   2.650 193.247 
+
+Coefficients:
+              Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)    6.14548    0.07965   77.16   &lt;2e-16 ***
+words_in_name  0.59732    0.02408   24.80   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 9.435 on 53977 degrees of freedom
+Multiple R-squared:  0.01127,   Adjusted R-squared:  0.01125 
+F-statistic: 615.2 on 1 and 53977 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a> data2 <span class="sc">|&gt;</span> <span class="fu">select</span>(languages, publishedyear, full_price) <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">num_commas =</span> <span class="fu">str_count</span>(languages,<span class="st">","</span>),</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">num_languages =</span> num_commas <span class="sc">+</span> <span class="dv">1</span>,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">publishedyear =</span> <span class="fu">as.numeric</span>(publishedyear),</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> <span class="fu">str_replace</span>(full_price, <span class="st">"NULL"</span>, <span class="st">"0"</span>),</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> <span class="fu">as.numeric</span>(full_price),</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> full_price<span class="sc">/</span><span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(full_price <span class="sc">==</span> <span class="fl">59.99</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(publishedyear) <span class="sc">|&gt;</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>   <span class="fu">summarize</span>(<span class="at">avg_language =</span> <span class="fu">mean</span>(num_languages)) <span class="sc">|&gt;</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(publishedyear <span class="sc">&gt;</span> <span class="dv">2006</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>   <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>   <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="st">"striped"</span>, <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">position =</span> <span class="st">"float_right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 3 warnings in `mutate()`.
+The first warning was:
+ℹ In argument: `num_commas = str_count(languages, ",")`.
+Caused by warning in `stri_count_regex()`:
+! argument is not an atomic vector; coercing
+ℹ Run `dplyr::last_dplyr_warnings()` to see the 2 remaining warnings.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-striped table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">publishedyear</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">avg_language</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2012</td>
+<td style="text-align: right;">5.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">9.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2014</td>
+<td style="text-align: right;">3.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2015</td>
+<td style="text-align: right;">3.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2016</td>
+<td style="text-align: right;">7.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2017</td>
+<td style="text-align: right;">6.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2018</td>
+<td style="text-align: right;">8.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2019</td>
+<td style="text-align: right;">8.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2020</td>
+<td style="text-align: right;">8.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2021</td>
+<td style="text-align: right;">8.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2022</td>
+<td style="text-align: right;">11.5</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>  data2 <span class="sc">|&gt;</span> </span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">words_in_name =</span> <span class="fu">str_count</span>(name,<span class="st">"</span><span class="sc">\\</span><span class="st">b[^ ]+</span><span class="sc">\\</span><span class="st">b"</span>),</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">num_commas =</span> <span class="fu">str_count</span>(languages,<span class="st">","</span>),</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">num_languages =</span> num_commas <span class="sc">+</span> <span class="dv">1</span>,</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">publishedyear =</span> <span class="fu">as.numeric</span>(publishedyear),</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> <span class="fu">str_replace</span>(full_price, <span class="st">"NULL"</span>, <span class="st">"0"</span>),</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> <span class="fu">as.numeric</span>(full_price),</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>          <span class="at">full_price =</span> full_price<span class="sc">/</span><span class="dv">100</span>) <span class="sc">|&gt;</span></span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(publishedyear) <span class="sc">|&gt;</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>   <span class="fu">summarize</span>(<span class="at">avg_words =</span> <span class="fu">mean</span>(words_in_name)) <span class="sc">|&gt;</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(publishedyear <span class="sc">&gt;</span> <span class="dv">2006</span>) <span class="sc">|&gt;</span></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>   <span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>   <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="st">"striped"</span>, <span class="at">full_width =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">position =</span> <span class="st">"float_right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 3 warnings in `mutate()`.
+The first warning was:
+ℹ In argument: `num_commas = str_count(languages, ",")`.
+Caused by warning in `stri_count_regex()`:
+! argument is not an atomic vector; coercing
+ℹ Run `dplyr::last_dplyr_warnings()` to see the 2 remaining warnings.</code></pre>
+</div>
+<div class="cell-output-display">
+<table class="table table-striped table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: right;" data-quarto-table-cell-role="th">publishedyear</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">avg_words</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2007</td>
+<td style="text-align: right;">3.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2008</td>
+<td style="text-align: right;">3.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2009</td>
+<td style="text-align: right;">3.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2010</td>
+<td style="text-align: right;">3.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2011</td>
+<td style="text-align: right;">3.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2012</td>
+<td style="text-align: right;">3.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2013</td>
+<td style="text-align: right;">3.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2014</td>
+<td style="text-align: right;">3.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2015</td>
+<td style="text-align: right;">3.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2016</td>
+<td style="text-align: right;">2.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2017</td>
+<td style="text-align: right;">2.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2018</td>
+<td style="text-align: right;">2.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2019</td>
+<td style="text-align: right;">2.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2020</td>
+<td style="text-align: right;">2.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2021</td>
+<td style="text-align: right;">2.8</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2022</td>
+<td style="text-align: right;">2.8</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>words <span class="ot">&lt;-</span> tidy_descriptions <span class="sc">|&gt;</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(stop_words) <span class="sc">|&gt;</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(font_stopwords) <span class="sc">|&gt;</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word) <span class="sc">|&gt;</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word <span class="sc">!=</span> <span class="st">"NA"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co"># word cloud of all years</span></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="fu">wordcloud</span>(</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">words =</span> words<span class="sc">$</span>word, </span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">freq =</span> words<span class="sc">$</span>n, </span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">max.words =</span> <span class="dv">200</span>, </span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">random.order =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">rot.per =</span> <span class="fl">0.35</span>,</span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">scale =</span> <span class="fu">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>),</span>
-<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">colors =</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">"Dark2"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#the json data waas very broken, not sure if these count as strings and regular expressions for my 3, but basically i'm just tricking r into turning into proper text</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a> descriptions <span class="ot">&lt;-</span> data2 <span class="sc">|&gt;</span> </span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">names =</span> <span class="fu">str_extract</span>(name, <span class="st">".*"</span>),</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">descriptions =</span> <span class="fu">str_extract</span>(description, <span class="st">".*"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">select</span>(descriptions, names, publishedyear)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There was 1 warning in `mutate()`.
+ℹ In argument: `descriptions = str_extract(description, ".*")`.
+Caused by warning in `stri_extract_first_regex()`:
+! argument is not an atomic vector; coercing</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a> tidy_descriptions <span class="ot">&lt;-</span> descriptions <span class="sc">|&gt;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">line =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, descriptions, <span class="at">token =</span> <span class="st">"words"</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>   </span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>smart_stopwords <span class="ot">&lt;-</span> <span class="fu">get_stopwords</span>(<span class="at">source =</span> <span class="st">"smart"</span>)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>font_stopwords <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">word =</span> <span class="fu">c</span>(<span class="st">"br"</span>,<span class="st">"li"</span>,<span class="st">"strong"</span>,<span class="st">"ul"</span>,<span class="st">"quot"</span>, <span class="st">"game"</span>), </span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">lexicon =</span> <span class="st">"font"</span>)</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="co">#top 20 words of all times</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>tidy_descriptions <span class="sc">|&gt;</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(publishedyear <span class="sc">!=</span> <span class="st">"NULL"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(smart_stopwords) <span class="sc">|&gt;</span></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(font_stopwords) <span class="sc">|&gt;</span></span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word, <span class="at">sort =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word <span class="sc">!=</span> <span class="st">"NA"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(n, <span class="at">n =</span> <span class="dv">20</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">fct_reorder</span>(word, n), n)) <span class="sc">+</span></span>
+<span id="cb34-21"><a href="#cb34-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb34-22"><a href="#cb34-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(word)`
+Joining with `by = join_by(word)`</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="MiniTextProject_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">#top 10 word for each year (I tried so hard to order them for each year but it doesn't work )</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>tidy_descriptions <span class="sc">|&gt;</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(publishedyear <span class="sc">!=</span> <span class="st">"NULL"</span>,</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>          publishedyear <span class="sc">&gt;</span> <span class="dv">2006</span>) <span class="sc">|&gt;</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(smart_stopwords) <span class="sc">|&gt;</span></span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(font_stopwords) <span class="sc">|&gt;</span></span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(publishedyear, word) <span class="sc">|&gt;</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">n =</span><span class="fu">n</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(publishedyear, <span class="fu">desc</span>(n)) <span class="sc">|&gt;</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(n, <span class="at">n =</span> <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="fu">fct_reorder</span>(word, n), n, <span class="at">fill =</span> publishedyear)) <span class="sc">+</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> publishedyear, <span class="at">scales =</span> <span class="st">"free"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(word)`
+Joining with `by = join_by(word)`
+`summarise()` has grouped output by 'publishedyear'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="MiniTextProject_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>words <span class="ot">&lt;-</span> tidy_descriptions <span class="sc">|&gt;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(stop_words) <span class="sc">|&gt;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(font_stopwords) <span class="sc">|&gt;</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(word) <span class="sc">|&gt;</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(word <span class="sc">!=</span> <span class="st">"NA"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Joining with `by = join_by(word)`
+Joining with `by = join_by(word)`</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># word cloud of all years</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wordcloud</span>(</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">words =</span> words<span class="sc">$</span>word, </span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">freq =</span> words<span class="sc">$</span>n, </span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">max.words =</span> <span class="dv">200</span>, </span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">random.order =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rot.per =</span> <span class="fl">0.35</span>,</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">scale =</span> <span class="fu">c</span>(<span class="fl">3.5</span>, <span class="fl">0.25</span>),</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">colors =</span> <span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">"Dark2"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in brewer.pal(9, "Dark2"): n too large, allowed maximum for palette Dark2 is 8
+Returning the palette you asked for with that many colors</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="MiniTextProject_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
 </div>
 
 
