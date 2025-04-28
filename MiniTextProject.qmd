@@ -1,0 +1,148 @@
+---
+title: "Mini Text Project"
+sidebar: false
+format:
+  html: default
+editor_options: 
+  chunk_output_type: console
+---
+
+
+## Unifished framework of MP4
+
+
+# Loading the Data from github broke the file is 160 mb and I think I overwhelmed the website, so this everything is eval = false right now
+
+```{r}
+library(tidyverse)
+library(jsonlite)
+library(tidytext)
+library(textdata)
+library(wordcloud)
+library(wordcloud2)
+library(viridis)
+library(ggthemes)
+```
+
+
+```{r}
+#| eval: FALSE
+data <- read_json("https://github.com/leinstay/steamdb/raw/refs/heads/main/steamdb.json")
+
+
+data2 <- as.data.frame(do.call(rbind, data))
+
+
+ str_view(data2$name, "\\w* \\d\\b") |> print(n=Inf) 
+ str_view(data2$name, "")
+ 
+ 
+ data2 <- data2 |> separate_wider_delim(published_store, delim = "-",
+          names = c("publishedyear", "publishedmonth", "publishedday"), too_few = "debug")
+
+```
+ 
+ 
+```{r}
+#| eval: FALSE
+ data2 |> drop_na(publishedyear) |> 
+   filter(publishedyear > 2006,
+          publishedyear != "NULL") |>
+   mutate(sequel = str_detect(name, "\\w* \\d\\d?\\b")) |> 
+   group_by(publishedyear) |> summarize(num_sequel = sum(sequel),
+                                        num_total = n(),
+                                        prop_sequel = mean(sequel)) |> print(n=100)
+
+ data2 |> drop_na(publishedyear) |> 
+   filter(publishedyear > 2006,
+          publishedyear != "NULL") |>
+   mutate(sequel = str_detect(name, "(..).*\\1 ")) 
+ 
+  
+ str_subset(data2$name, "(..\\w*) \\1")
+ 
+   group_by(publishedyear) |> summarize(num_sequel = sum(sequel),
+                                        num_total = n(),
+                                        prop_sequel = mean(sequel)) |> print(n=100)
+
+```
+
+ 
+
+```{r}
+#| eval: FALSE
+#the json data waas very broken, not sure if these count as strings and regular expressions for my 3, but basically i'm just tricking r into turning into proper text
+ descriptions <- data2 |> 
+   mutate(names = str_extract(name, ".*"),
+          descriptions = str_extract(description, ".*")) |>
+   select(descriptions, names, publishedyear)
+ 
+ tidy_descriptions <- descriptions |>
+  mutate(line = row_number()) |>
+  unnest_tokens(word, descriptions, token = "words")
+   
+smart_stopwords <- get_stopwords(source = "smart")
+
+font_stopwords <- tibble(
+  word = c("br","li","strong","ul","quot", "game"), 
+  lexicon = "font")
+
+
+#top 20 words of all times
+tidy_descriptions |>
+   filter(publishedyear != "NULL") |>
+  anti_join(smart_stopwords) |>
+  anti_join(font_stopwords) |>
+  count(word, sort = TRUE) |>
+  filter(word != "NA") |>
+  slice_max(n, n = 20) |>
+  ggplot(aes(fct_reorder(word, n), n)) +
+  geom_col() +
+  coord_flip()
+
+#top 10 word for each year (I tried so hard to order them for each year but it doesn't work )
+tidy_descriptions |>
+   filter(publishedyear != "NULL",
+          publishedyear > 2006) |>
+  anti_join(smart_stopwords) |>
+  anti_join(font_stopwords) |>
+  group_by(publishedyear, word) |>
+  summarize(n =n()) |> 
+  arrange(publishedyear, desc(n)) |>
+  slice_max(n, n = 10) |> 
+  ggplot(aes(fct_reorder(word, n), n, fill = publishedyear)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ publishedyear, scales = "free")
+
+```
+ 
+```{r}
+#| eval: FALSE
+words <- tidy_descriptions |>
+  anti_join(stop_words) |>
+  anti_join(font_stopwords) |>
+  count(word) |>
+  filter(word != "NA") |>
+  arrange(desc(n))
+
+# word cloud of all years
+wordcloud(
+  words = words$word, 
+  freq = words$n, 
+  max.words = 200, 
+  random.order = FALSE, 
+  rot.per = 0.35,
+  scale = c(3.5, 0.25),
+  colors = brewer.pal(9, "Dark2"))
+
+
+
+```
+
+
+
+
+  
+
+

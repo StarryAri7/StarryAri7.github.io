@@ -16,6 +16,8 @@ website:
             href: MiniMapProject.qmd
           - text: "Mini Project #2"
             href: MP2.qmd 
+          - text: "Mini Project #3"
+            href: MiniTextProject.qmd
       - text: "Major Projects"
         menu:
           - text: "Spatial Analysis of Goshawks"
