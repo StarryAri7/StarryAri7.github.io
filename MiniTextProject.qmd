@@ -11,8 +11,6 @@ editor_options:
 ## Unifished framework of MP4
 
 
-# Loading the Data from github broke the file is 160 mb and I think I overwhelmed the website, so this everything is eval = false right now
-
 ```{r}
 library(tidyverse)
 library(jsonlite)
