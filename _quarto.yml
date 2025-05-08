@@ -18,6 +18,9 @@ website:
             href: MP2.qmd 
           - text: "Mini Project #4"
             href: MiniTextProject.qmd
+          - text: "shiny app??"
+            href: shiny.qmd
+            
       - text: "Major Projects"
         menu:
           - text: "Spatial Analysis of Goshawks"
