@@ -54,12 +54,12 @@ birdsstates <- states_sf |> left_join(birds, by = c("name" = "State"))
 # The website is interesting, but I double checked the data!
 ```
 
-
 ### Alt-text / Description
+
 **This is a chloropleth map of the United States of America, the X and Y axis are longitude and latitude, respectively. Alaska and Hawaii have been moved to the bottom left of the map for clarity of sight. Each state is filled with a color based on the percentage of change in federal land from 1990 to 2018. They range from -20% (a decrease in federal land) to 193% (a large increase in federal land). The biggest takeaway is that the majority of states have changed no more than 5% in the positive or negative direction. the pacific northwest seems to have gained land slightly, while the southwest states have all lost land, with Arizona having decreased the most in the country. The eastern side of the US, has largely made gains from 1% up to 70% in Maine.**
 
-
 *Static Plot*
+
 ```{r}
 #| echo: FALSE
 #| warning: FALSE
@@ -169,6 +169,7 @@ mainland2 +
 ```
 
 *Interactive Plot*
+
 ```{r}
 #| echo: FALSE
 #| warning: FALSE
@@ -223,11 +224,12 @@ publicland |>
   addScaleBar(position = "bottomleft") 
 ```
 
-
 ### Description
+
 **A major insight from this map is that many regions of states choose birds within the same family, implying that bird likely lives within that area. this is especially true of the Icteridae (Meadow larks) in the great plains, Mimidae (mocking birds) in the south east, and Cardinalidae (Cardinals) in the central eastern region. All 3 of these birds have high concentrations in these areas, so their states seem to have chosen a local bird that they feel represents them.**
 
 *Static Plot*
+
 ```{r}
 #| fig-width: 10
 #| fig-height: 5
@@ -359,6 +361,7 @@ bird_mainland +
 ```
 
 *Interactive Plot*
+
 ```{r}
 #| echo: FALSE
 #| warning: FALSE
@@ -406,8 +409,7 @@ birdsstates |>
               color = "white",
               dashArray = "5",
               # I wanted a little opacity so you can see the state names!
-              fillOpacity = .7)
-
+              fillOpacity = .7,
 
               # The highlight is one of my favorite features
               highlightOptions = highlightOptions(
@@ -433,6 +435,4 @@ birdsstates |>
               options = popupOptions(closeOnClick = FALSE)) |>
   # You gotta have a scale bar!
   addScaleBar(position = "bottomleft")
- ```
-
-
+```

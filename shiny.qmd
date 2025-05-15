@@ -1,9 +1,13 @@
+---
+title: "Flex Dashboard Project"
+sidebar: false
+format:
+  html: default
+editor_options: 
+  chunk_output_type: console
+---
 
-
-
-<iframe src= "https://ariaw.shinyapps.io/14_shinyapp/" width = "1000" height = "1000">
-
-<iframe src= "https://gwynyn.shinyapps.io/Wildfires/" width = "1000" height = "1000">
+<iframe src= "https://gwynyn.shinyapps.io/Wildfires/" width = "1100" height = "1000">
 
 
 </iframe>
