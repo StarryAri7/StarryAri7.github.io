@@ -180,7 +180,7 @@ publicland <- publicland |> drop_na(change_1990)
 # Here I set the bins for legend, and the color scale
 bins <- c(-20,-15,-10,-5,0,5,30,50,200)
   pal2 <- colorBin("BrBG",
-                   bins = bins )
+                   bins = bins)
 
 
   
@@ -406,7 +406,9 @@ birdsstates |>
               color = "white",
               dashArray = "5",
               # I wanted a little opacity so you can see the state names!
-              fillOpacity = .7,
+              fillOpacity = .7)
+
+
               # The highlight is one of my favorite features
               highlightOptions = highlightOptions(
                 weight = 5,
@@ -431,6 +433,6 @@ birdsstates |>
               options = popupOptions(closeOnClick = FALSE)) |>
   # You gotta have a scale bar!
   addScaleBar(position = "bottomleft")
-```
+ ```
 
 
