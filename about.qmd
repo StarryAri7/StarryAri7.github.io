@@ -94,7 +94,7 @@ I currently have 4 jobs on campus: in the ceramic studio, at Stogrow, as an RA, 
 :::
 
 ::: text-center
-I **love** to cook and bake whenever I can, fun fact: I spent my gap-year as a head cook!
+I **love** to cook and bake whenever I can, fun fact: I spent my gap-year as a head cook! I love to bake bread whenever I can :)
 :::
 
 ::: {layout-ncol="3"}
