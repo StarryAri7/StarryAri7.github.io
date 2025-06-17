@@ -4,7 +4,7 @@ project:
   
 # ~ additional metadata excluded for brevity ~
 website:
-  title: "Aria's Little Corner of the (spider)Web"
+  title: "Aria's Little Corner of the (spider)Web!"
   navbar:
     left:
       - href: index.qmd
