@@ -105,7 +105,7 @@ examined the correlatory differences in the prey from both these sets of
 fish and the size of these fish.
 
 ![Juvenile Chinook salmon, Roger Tabor/USFWS, Public Domain,
-<https://www.fws.gov/media/juvenile-chinook-salmon>](/home/rstudio/users/whalen4/salmon%20stomachs/Data/fish.jpg)
+<https://www.fws.gov/media/juvenile-chinook-salmon>](~/1R_Important/StarryAri7.github.io/datafish.jpg)
 
 # Data
 
