@@ -15,7 +15,7 @@ about:
         target: _blank
 ---
 
-I really like R, and you should too! 
+I really like R, and you should too!
 
 Learn more about me in "About Aria!"
 
@@ -23,4 +23,4 @@ Checkout my mini projects from Data Science 2 in "Mini Projects" and my larger f
 
 ![](media/taiko.JPG){.rounded-img}
 
-I am also in St. Olaf Taiko! Come see us perform each spring and fall! 
+I am also in St. Olaf Taiko! Come see us perform each spring and fall!
