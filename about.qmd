@@ -24,7 +24,7 @@ toc: FALSE
 :::::::
 
 ::: text-center
-I'm a biology major, with a specific interest in marine ecology, and a love of birds! I am also interested in doing natural restoration work and outdoor environmental education!
+I'm a biology major, with a specific interest in marine ecology and a love of birds! I am also interested in doing natural restoration work and outdoor environmental education after graduation!
 :::
 
 :::::: {layout-ncol="3"}
