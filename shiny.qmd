@@ -7,6 +7,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-<iframe src="https://gwynyn.shinyapps.io/Wildfires/" width="1100" height="1000">
+<iframe src = "https://gwynyn.shinyapps.io/Wildfires/" width = "1100" height = "1000">
 
 </iframe>
