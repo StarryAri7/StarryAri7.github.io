@@ -7,6 +7,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+Proof of concept for shiny app integration into quarto website:
+
 <iframe src = "https://gwynyn.shinyapps.io/Wildfires/" width = "1100" height = "1000">
 
 </iframe>
