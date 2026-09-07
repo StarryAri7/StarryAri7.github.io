@@ -115,6 +115,25 @@ I **love** to cook and bake whenever I can, fun fact: I spent my gap-year as a h
 As a vegetarian I love to both eat and observe fungi whenever I can!
 :::
 
+
+:::::: {layout-ncol="3"}
+::: left
+![](media/taikoweb1.png){.rounded-img}
+:::
+
+::: midleft
+![](media/taikoweb2.jpg){.rounded-img}
+:::
+
+::: midleft
+![](media/taikoweb3.jpg){.rounded-img}
+:::
+::::::
+
+::: text-center
+I play Taiko drums for fun! I played with St. Olaf Taiko for 2 and a half years, and now play with Harisen Daiko in Minneapolis.
+:::
+
 ::::: {layout-ncol="2"}
 ::: left
 ![](media/snake1.jpeg){.rounded-img}
