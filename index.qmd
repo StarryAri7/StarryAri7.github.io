@@ -11,7 +11,7 @@ about:
         target: _blank
       - icon: envelope
         text: Email me!
-        href: mailto:whalen4@stolaf.edu
+        href: mailto:ajwhalen7@gmail.com
         target: _blank
 ---
 
