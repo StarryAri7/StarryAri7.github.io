@@ -27,6 +27,8 @@ website:
             href: Goshawks_Pres.Rmd
           - text: "Analysis of Salmon Stomach Contents"
             href: salmon_tummys.Rmd
+          - text: "Identification of Frogs by Body Part Size"
+            href: frog_project.Rmd
 
 format:
   html:

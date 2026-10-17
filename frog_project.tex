@@ -1,0 +1,517 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Stats 272 Project: Final Report},
+  pdfauthor={Aria Whalen and Gwynnie Hayes},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Stats 272 Project: Final Report}
+\author{Aria Whalen and Gwynnie Hayes}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsection{Introduction}\label{introduction}
+
+In order to identify unique species, researchers will often use a
+variety of methods, including size, color, behavior, and sound. Size
+measurements can be especially important when a specimen is visually
+difficult to differentiate from other species or deceased.
+Identification of species is crucial for conservation, as different
+species and families will require a unique habitat for their lifestyle
+and simply put, we cannot even begin to try and conserve a species if we
+don't know what they are. Frog populations have been declining for
+decades (Wake, 1991), often even without a specific known cause.
+Utilizing body measurements of previously deceased frog specimens we
+seek to build a model that can identify a species based off a handful of
+measurements. Body size measurements are also known to be associated
+with niche partioning in a variety of other animals, and a body size
+based model could help explore which body parts are notably different
+between families.
+
+We chose to explore 2 frogs families colloquially known to contain
+vastly different physical characteristics and habitats: Hylidae (tree
+frogs) and Bufonidae (true toads). Frogs in the family of Hylidae are
+known to live up in the trees of forested environments, though some live
+in ponds and swamps. They are known to be long and skinny, and have
+distinct toe pads that assist with climbing and strong legs for jumping
+among the trees (AmphibiaWeb). Frogs in the family of Bufonidae are
+typically known to be terrestrial/ground dwelling, they dig burrows and
+prefer moist shady environments. (Bufonidae).
+
+Both families have been studied extensively as focuses of work in
+conservation, and are known to use their habitats very specifically.
+Sanchez et. al (2010) found that the micro-habitats of \emph{Rhinella
+fernandezae} (a species in the Bufonidae family) are not randomly
+chosen, but a highly specific combination of soil hardness and broad
+leaf plant cover. The choice of soil hardness is especially linked to
+their tendancy for burrowing. Paris (2000) found that the number of
+\emph{Litoria pearsoniana} (a species in the Hylidae family) were highly
+correlated with the size of the local stream and presence of palm trees,
+the latter of which is a limiting factor which is actively threatened by
+forest clear cutting for cattle grazing. These papers show that even
+small changes to an environment can have massive effects on the number
+of species in an area.
+
+\begin{figure}
+\centering
+\includegraphics[width=3.64583in,height=\textheight,keepaspectratio]{/home/rstudio/users/whalen4/salmon stomachs/Stats 2 Project/data/fig-1-full.png}
+\caption{A: Snout-Vent Length (SVL), B: Lower Arm Length, C: Lower Leg
+Length (Tibia), Eye Length, Head Length --- Guayasamin et al.,
+2022}\label{id}
+\end{figure}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.1610}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.8390}}@{}}
+\caption{Description of Relevant Variables}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Measurement
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Measurement
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Lower Leg Length & The length of the tibia and fibula, measured from the
+heel to the proximal edge of the knee \\
+Lower Arm Length & Measured from the wrist to the proximal end of the
+elbow \\
+Head Length & Measured from the jaw joint to the tip of the snout \\
+Eye Length & Measured from the anterior corned to the posterior corner
+of the eyelids \\
+Naris-Snout Length & Measured from the Anterior edge of the naris to the
+edge of the snout on the same side of the body \\
+X Length Ratio & X Variable above was divided by Snout-Vent Length
+(below) to remove size colinearity bias \\
+Snout-Vent Length & Measured from the tip of the snout to vent \\
+Family & Hylidae: Tree Frogs and their allies, Bufonidae: True Toads \\
+\end{longtable}
+
+\subsection{Materials and Methods}\label{materials-and-methods}
+
+These data were collected by researchers at the University of Michigan
+Museum of Zoology (UMMS) Division of Reptiles and Amphibians, from
+specimens in their collection. The collection includes 2600 individual
+specimens that contain 757 different species from 52 different families.
+The frogs were measured in millimeters using digital calipers to
+determine length and width of each body parts. Each row represents a
+unique frog and only adult frogs were measured. Some species are
+represented as many as 9 times, though many individuals have only 5 or
+less observations, with this in mind we chose to represent the data on
+the family level.
+
+To explore these data for our research question (below) we had to do
+some data manipulation to put it in a workable state. First, the data
+were filtered to just include Hylidae and Bufonidae families and any
+NA's were removed, which lowered the data to 898 full rows. Families
+were also renamed to their common names, while Hylidae is technically a
+family of Tree frogs \textbf{and their allies}, we just chose to name
+them tree frogs for ease of understandability. Then, to remove size
+based colinearity all variables were divided by SVL; as a result, all
+explanatory variables in the project are described as ``relative to body
+size'', and unit-less. For our logistic tests, we also multiplied the
+explanatory variables by 20 to display them as a 5\% ratio to body size,
+to account for small ratio values. Summary statitics are a median (to
+account for high amount of outliers) with standard deviation to define
+spread. Lastly, we used this data to identify an optimal generalized
+logistic model using a stepwise analysis in both directions, which uses
+a two-sided p-value.
+
+\subsection{Results}\label{results}
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{Number of rows and \% of dataset by Family}\tabularnewline
+\toprule\noalign{}
+family & n & Percent \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+family & n & Percent \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Tree Frogs & 536 & 59.7 \\
+True Toads & 362 & 40.3 \\
+\end{longtable}
+
+\begin{longtable}[t]{lrrrr}
+\caption{\label{tab:unnamed-chunk-6}Summary of All Body Measurements for 
+                                     Frogs + Toads}\\
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{Toads} & \multicolumn{2}{c}{Frogs} \\
+\cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5}
+Measurements & Median & Std. Dev. & Median & Std. Dev.\\
+\midrule
+Tibio Fibula Length & 23.5 & 10.3 & 19.5 & 9.6\\
+Antebrachial Length & 15.0 & 6.3 & 7.6 & 3.4\\
+Head Length & 18.8 & 8.8 & 12.9 & 6.3\\
+Eye Length & 5.4 & 2.5 & 3.8 & 1.6\\
+Naris Snout Length & 1.7 & 1.0 & 1.4 & 0.7\\
+\addlinespace
+Snout-Vent Length & 59.3 & 27.5 & 37.5 & 17.5\\
+Head Width & 20.2 & 11.1 & 12.0 & 6.2\\
+Femur Length & 22.8 & 10.9 & 18.0 & 9.1\\
+Inter-Oribital Length & 8.1 & 4.6 & 6.6 & 3.8\\
+Inter-Narial Distance & 2.4 & 1.9 & 2.3 & 1.3\\
+\addlinespace
+Eye Naris Length Length & 3.9 & 1.9 & 3.4 & 2.2\\
+\bottomrule
+\end{longtable}
+
+Table 3 defines the summary of all variables that were looked at in the
+dataset. The first 6 rows are those identified as useful to the model by
+the stepwise analysis, in order of importance. The remaining 5 variables
+were marked as not statistically significant to the model. Though not a
+rule, variables whose SD is less than half of the median are more
+significant, and those where the SD is over half of the median are less
+or in-significant.
+
+\begin{longtable}[t]{lrrrr}
+\caption{\label{tab:unnamed-chunk-7}Summary of All Body Measurements (but SVL) for Frogs + Toads \textbf{as a Ratio of Body Size}}\\
+\toprule
+\multicolumn{1}{c}{ } & \multicolumn{2}{c}{Toads} & \multicolumn{2}{c}{Frogs} \\
+\cmidrule(l{3pt}r{3pt}){2-3} \cmidrule(l{3pt}r{3pt}){4-5}
+Measurements & Median & Std. Dev. & Median & Std. Dev.\\
+\midrule
+Tibio Fibula Length Ratio & 0.391 & 0.053 & 0.526 & 0.056\\
+Antebrachial Length Ratio & 0.248 & 0.031 & 0.198 & 0.024\\
+Head Length Ratio & 0.314 & 0.034 & 0.342 & 0.034\\
+Eye Length Ratio & 0.092 & 0.014 & 0.100 & 0.013\\
+Naris Snout Length Ratio & 0.031 & 0.011 & 0.038 & 0.012\\
+\addlinespace
+Head Width Ratio & 0.342 & 0.043 & 0.315 & 0.039\\
+Femur Length Ratio & 0.389 & 0.057 & 0.473 & 0.057\\
+Inter-Oribital Length Ratio & 0.143 & 0.022 & 0.181 & 0.031\\
+Inter-Narial Distance Ratio & 0.042 & 0.018 & 0.064 & 0.018\\
+Eye Naris Length Length Ratio & 0.068 & 0.012 & 0.090 & 0.019\\
+\bottomrule
+\end{longtable}
+
+Table 4 displays all variables divided by svl as a ratio of body size.
+These numbers are decimals and unitless, and represent a similar trend
+to the un-ratioed variables.
+
+\begin{figure}[H]
+
+{\centering \includegraphics{frog_project_files/figure-latex/unnamed-chunk-9-1} 
+
+}
+
+\caption{Boxplot of all Ratioed Variables, seperated by family. Most pairs have IQR overalap, though medians are statistically different in all plots (all p-values 1.4e-13 or lower). SVL represented in corner due to scale inequality, measured in millimeters -- all other measurements unitless.}\label{fig:unnamed-chunk-9}
+\end{figure}
+
+\begin{figure}[H]
+\includegraphics{frog_project_files/figure-latex/unnamed-chunk-10-1} \caption{Density plots for all six variables in the model, showing individual probabilities of a specimin being a frog or toad across varying body measurement lengths}\label{fig:unnamed-chunk-10}
+\end{figure}
+
+There are noticable differences between the families on an individual
+variable basis for all 6 measurements (Fig 1 + 2). The ratios of lower
+leg length and lower arm length especially, show clear distinctions
+between the two groups in both the boxplots and density curves. The
+ratio of head length shows a similar density plot to Eye length, though
+its more widely spread boxplot differentiates it. The ratios of eye
+length and naris-snout length show density plots that are not nearly as
+clean, and boxplots with medians that are very close together,
+explaining why they are less useful to the model. Lastly, though SVL
+displays a large difference in its scatterplot, the density plot shows
+that the variable is not as clear cut as one might assume.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{/home/rstudio/users/whalen4/salmon stomachs/Stats 2 Project/data/plotly.png}}
+\caption{Multiple angles of a 3d scatterplot using the 3 most impactful
+Variables}
+\end{figure}
+
+There is a clear distinction between the two family groups (Fig. 4)
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.4030}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1343}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2239}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1194}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1194}}@{}}
+\caption{Logit of Family as a 5\% Ratio of Body Size, AIC =
+122}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Variable
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Estimate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Standard Error
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Z-value
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+P-value
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Variable
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Estimate
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Standard Error
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+Z-value
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+P-value
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+(Intercept) & -3.715 & 3.21 & -1.16 & 0.248 \\
+\texttt{Lower\ Leg\ Length\ Ratio} & 3.075 & 0.42 & 7.37 & 0.000 \\
+\texttt{Lower\ Arm\ Length\ Ratio} & -6.562 & 0.83 & -7.94 & 0.000 \\
+\texttt{Head\ Length\ Ratio} & 2.398 & 0.52 & 4.57 & 0.000 \\
+\texttt{Eye\ Length\ Ratio} & -2.452 & 1.09 & -2.26 & 0.024 \\
+\texttt{Naris-Snout\ Length\ Ratio} & -4.021 & 1.55 & -2.60 & 0.009 \\
+\texttt{Snout-Vent\ Length} & -0.038 & 0.02 & -2.23 & 0.026 \\
+\end{longtable}
+
+Model Interpretations:
+
+\begin{itemize}
+\item
+  Intercept: odds of being a tree frog when body ratios of Lower Leg
+  Length, Lower Arm Length, Head Length, Eye Length, Naris-Snout Length,
+  Snout-Vent Length are 0 are 0.024:1.
+\item
+  Lower Leg Length Ratio: When all other variables are held constant,
+  for every 0.05 increase in lower leg length with respect to body size,
+  the odds of being a tree frog change by 21.64 times.
+\item
+  Lower Arm Length Ratio: When all other variables are held constant,
+  for every 0.05 increase in lower arm length with respect to body size,
+  the odds of being a tree frog change by 0.001 times.
+\item
+  Head Length Ratio: When all other variables are held constant, for
+  every 0.05 increase in head length with respect to body size, the odds
+  of being a tree frog change by 11.00 times.
+\item
+  Eye Length Ratio: When all other variables are held constant, for
+  every 0.05 increase in eye length with respect to body size, the odds
+  of being a tree frog change by 0.086 times.
+\item
+  Naris-Snout Length Ratio: When all other variables are held constant,
+  for every 0.05 increase in naris-snout length with respect to body
+  size the odds of being a tree frog change by 0.017 times.
+\item
+  Snout-Vent Length: When all other variables are held constant, for
+  every 1.0 increase in snout-vent length by 1 millimeter, the odds of
+  being a tree frog change by 0.96 times
+\end{itemize}
+
+\textbf{Discussion}
+
+Our goal of this project was to find the best morphological traits of
+the order Anura to predict if a specimen would be a true toad or a tree
+frog. From this statistical analysis we found that the best way to
+predict a frog or a toad is by using 6 measurements: Body Size Ratios of
+lower leg length, lower arm length, head length, eye length naris-snout
+length, and an unratioed Snout-Vent Length. It is important to note that
+the first 3 variables: lower leg length, lower arm length and head
+length, are by far more important to the model than the last 3.
+\emph{Each} of these three variables lowered the overal AIC (variability
+explained by the model) by many hundreds, wheras the addition of the
+latter 3 variables only lowered the AIC by a cumulative of 16.
+
+Interestingly, though it would seem that having longer eye length or
+naris snout length, with respect to body size, would raise the odds of
+being a tree frog (Figs. 2 + 3), the model displays the opposite, as the
+length increases the odds of being a tree frog is smaller. This is
+likely due to the minimial variability in these variables, and the way
+they interact with the other variables in the full model. If you have a
+full specimen we reccomend trying to use all 6 variables, but in a
+pinch, the measurements of lower leg, lower arm, and head length
+relative to body size will suffice.
+
+Though we used a step-wise exploratory method for arriving on our model,
+rather than testing specific variables of interest, the fact that
+measurements of lower leg length and lower arm length make a lot of
+sense in the context of the data. As discussed earlier, one of the most
+unique features to the tree frogs are their strong jumping legs. The
+fact that the odds of being a tree frog change by 21.64 times for every
+.05 increase in relative lower leg length strongly affirms the claim by
+Paris (2000). Our model also stated that the odds of being a tree frog
+change by .001 times for every .05 increase in lower arm length as a
+ratio to body size. This means that the trait of longer lower arms is
+highly specialized to toads, which strongly corroborates the connection
+made by Sanchez et. al (2010) of soil hardness and burrowing habits, and
+is a clear distinction between the two families.
+
+One potential confounding variable to our data is that we do not know
+how these specimens were stored. The authors did not clairfy if
+specimins were stored in jars or as skeletons, this difference could
+warp measurements due to layers of skin and muscle, especially in
+smaller variables, such as naris-snout length. Furthermore, preserved
+specemins are known to shrink over time, despite the best preservation
+techniques, specimins of different ages could have shrunken or become
+deformed at different rates, warping them from their `true' measurement,
+adding extra variability to the dataset.
+
+This model can be generalized to identify frogs that fall in the family
+of Hylidae or Bufonidae, which limits its ability to identify an unknown
+frog specemin, though if it is known to fall into one of those two
+families, it could be especially useful then. More complex models could
+also be made to narrow down a frog from a wider selction of families or
+species. The source of the data library of specemins is proudly boasted
+to be `world wide' though our spececific data is not connected to a
+location, so it is hard to say where in the world we can generalize this
+data to. If we assume the sampling of species and locations is random
+though, it could be feasible to generalize it to any species within
+these two families around the world.
+
+One of the motivations behind our research was the declining population
+of frogs, which is still vastly misunderstood. With this analysis, we
+have identified some clear defining characteristcs to make the
+identification of diceased frogs easier. Furthermore, our model found
+clear evidence of family wide nich partioning in Tree frogs and True
+Toads. Tree frogs lower \emph{legs} are longer and specialized for
+jumping between trees, while true toads lower \emph{arms} are longer and
+specialized for digging burrows on the forest floor. Thus this model
+could be used to aid the conservation of frogs in a 2 fold manor. First,
+a specimen could be identified by a series of body measurements, and
+then linked to a location and larger dataset. Secondly, by identifying
+which traits are important in these specimins, we can begin to look for
+problems that relate to their specialization, such as in deforestatin or
+soil quality. This analysis could be done via a hot spot analysis, where
+a subject of interest is identified and then algorithmically analyzed to
+reveal spatial trends correlated and shows evidence of a phenomenon
+happening with a confidence level.
+
+Future logistic models should work to assess differentiations of other
+families, and potentially explore specimens on a species level.
+
+\subsection{Sources:}\label{sources}
+
+AmphibiaWeb---Hylidae. (n.d.). Retrieved May 16, 2025, from
+\url{https://amphibiaweb.org/lists/Hylidae.shtml}
+
+Andreas, M., Reiter, A., Cepáková, E., \& Uhrin, M. (2013). Body size as
+an important factor determining trophic niche partitioning in three
+syntopic rhinolophid bat species. Biologia, 68(1), 170--175.
+\url{https://doi.org/10.2478/s11756-012-0139-1}
+
+Bufonidae (bufonidés, Bufonids, crapauds, Toads). (n.d.). Animal
+Diversity Web. Retrieved May 16, 2025, from
+\url{https://animaldiversity.org/accounts/Bufonidae/}
+
+Colloca, F., Carpentieri, P., Balestri, E., \& Ardizzone, G. (2010).
+Food resource partitioning in a Mediterranean demersal fish assemblage:
+The effect of body size and niche width. Marine Biology, 157(3),
+565--574. \url{https://doi.org/10.1007/s00227-009-1342-7}
+
+Parris, K. M. (2001). Distribution, habitat requirements and
+conservation of the cascade treefrog (Litoria pearsoniana, Anura:
+Hylidae). Biological Conservation, 99(3), 285--292.
+\url{https://doi.org/10.1016/S0006-3207(00)00194-4}
+
+Sanchez, L. C., Busch, M., \& Madanes, N. (2010). Terrestrial habitat
+use by the burrowing toad, Rhinella fernandezae (Anura: Bufonidae).
+Folia Zoologica, 59(2), 122--128.
+\url{https://doi.org/10.25225/fozo.v59.i2.a7.2010}
+
+Wake, D. B. (1991). Declining Amphibian Populations. Science, 253(5022),
+860--860. \url{https://doi.org/10.1126/science.253.5022.860}
+
+\end{document}

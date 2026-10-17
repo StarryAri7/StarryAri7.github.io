@@ -115,7 +115,6 @@ I **love** to cook and bake whenever I can, fun fact: I spent my gap-year as a h
 As a vegetarian I love to both eat and observe fungi whenever I can!
 :::
 
-
 :::::: {layout-ncol="3"}
 ::: left
 ![](media/taikoweb1.png){.rounded-img}
