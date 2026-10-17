@@ -27,6 +27,10 @@ website:
             href: frog_project.Rmd
           - text: "Women’s Participation in Global Climate Conferences"
             href: Stats 316 Project.pdf
+            target: _blank
+          - text: "Timing and Tides: Exploring Trends in Women’s Clubs"
+            href: CIR_poster.pdf
+            target: _blank
 
 format:
   html:
