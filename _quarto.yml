@@ -25,6 +25,8 @@ website:
             href: salmon_tummys.Rmd
           - text: "Identification of Frogs by Body Part Size"
             href: frog_project.Rmd
+          - text: "Women’s Participation in Global Climate Conferences"
+            href: Stats 316 Project.pdf
 
 format:
   html:
