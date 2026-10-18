@@ -13,6 +13,7 @@ website:
       
       - text: "Previous Work History"
       - href: aria_cv_26.pdf
+        target: _blank
             
       - text: "Major Projects"
         menu:

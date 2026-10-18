@@ -15,10 +15,11 @@ about:
         target: _blank
 ---
 
-I really like R, and you should too!
+This website represents most of my major projects during my time as a student at St. Olaf. My major projects are organized chronologically, ranging from my very first major analysis to the poster I created in senior year after a yearlong research fellowship. 
 
-Learn more about me in "About Aria!"
+To learn more about my work and personal interests, click the "About Aria!" tab. 
 
-Checkout my mini projects from Data Science 2 in "Mini Projects" and my larger final projects in "Major Projects"
+To see my CV click the "Previous Work History" tab.
 
+I am passionate about accessible and approachable statistical analysis and data visualization, especially when used in an ecological context. I love to learn and explore problems that make tangible differences in our world.
 
