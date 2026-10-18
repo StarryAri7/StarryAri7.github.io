@@ -15,11 +15,10 @@ about:
         target: _blank
 ---
 
-This website represents most of my major projects during my time as a student at St. Olaf. My major projects are organized chronologically, ranging from my very first major analysis to the poster I created in senior year after a yearlong research fellowship. 
+This website represents most of my major projects during my time as a student at St. Olaf. My major projects are organized in a reverse chronology,  from the poster I created in senior year after a yearlong research fellowship my very first major analysis on salmon stomachs.
 
-To learn more about my work and personal interests, click the "About Aria!" tab. 
+To learn more about my work and personal interests, click the "About Aria!" tab.
 
 To see my CV click the "Previous Work History" tab.
 
 I am passionate about accessible and approachable statistical analysis and data visualization, especially when used in an ecological context. I love to learn and explore problems that make tangible differences in our world.
-
