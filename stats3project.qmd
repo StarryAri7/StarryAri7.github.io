@@ -72,31 +72,90 @@ sum6 <- total_data |> sum_stats(prop_women, varname = "Proportion of Women")
 bind_rows(sum1, sum5, sum6, sum2, sum3, sum4) |> kable(digits = 1, caption = "Table 1. Summary Statistics for Numeric Variables") |> kable_styling(bootstrap_options = "striped")
 ```
 
-::::: columns
-::: column
+
 To begin our modeling process, we looked at summary statistics for numeric variables. Table 1 shows the summary of the relevant numeric variables in our final model, excluding Meeting Year as it stayed relatively constant throughout the dataset. There is a large variation in the number of delegates from each country, which is why we used it as a weight later on in the modeling process. DI data is not recorded for every year, resulting in a high number of NA's.
 
 Fig. 1 shows four important relationships. First, there is a correlation between a country's DI Score and the proportion of women in their delegation; there is a decent amount of variability from the line, but a clear trend exists. Over time, we see there is an increasing average proportion of women in COP delegations.
-:::
 
-::: column
-![Figure 1. Numeric Variable Correlation with Proportion of Women](media/fig_1.png){.rounded-img width="540"}
-:::
-:::::
+```{r, echo = FALSE, fig.cap = "Fig. 1: Numeric Variable correlations with proportion of women", fig.height = 8, fig.width = 10}
+p9 <- total_data |>
+  drop_na(hri_index) |>
+  ggplot(aes(x = hri_index, y = prop_women)) +
+  geom_point(alpha = .1) + 
+  geom_smooth(method = lm, color = "orange2") +
+  theme_bw() +
+  labs(x = "HRI Index",
+       y = "Prop. Women",
+       title = "HRI on Prop Women")
 
-::::: columns
-::: column
+p10 <- total_data |>
+  drop_na(democracy_index) |>
+  ggplot(aes(x = democracy_index, y = prop_women)) +
+  geom_point(alpha = .5) + 
+  geom_smooth(method = lm, color = "orange2") +
+  theme_bw() +
+  labs(x = "Democracy Index",
+       y = "Prop. Women",
+       title = "Effect of Democracy Index score on Prop. Women")
+
+p11 <- total_data |>
+  drop_na(gdp_capita) |>
+  ggplot(aes(x = log(gdp_capita), y = prop_women)) +
+  geom_point(alpha = .1) + 
+  geom_smooth(method = lm, color = "orange2") +
+  theme_bw() +
+  labs(x = "LOG(GDP per Capita)",
+       y = "Prop. Women",
+       title = "Log(GDP) on Prop Women")
+
+p12 <- total_data |>
+  ggplot(aes(x = meeting_year, y = prop_women)) +
+  geom_point(alpha = .5) + 
+  geom_smooth(method = lm, color = "orange2") +
+  theme_bw() +
+  labs(x = "Meeting Year",
+       y = "Prop. Women",
+       title = "Meeting Year on Prop Women")
+
+(p10 + p12) / (p9 + p11)
+```
+
+
+
 There may also be some potential explanatory value of a country's HRI and log(GDP per Capita) on the proportion of women involved in a COP summit, though there is a much higher amount of variability. Log(GDP per capita) is especially variable.
 
 From Fig. 2, we can see that Northern America has the highest intercept for the proportion of women in a country’s delegation. However, the slope seems to be slightly flatter than many of the other continents; Europe, Latin America & The Caribbean, and Oceania are at a very similar proportion of women in the most recent meeting years despite having a much lower intercept. Africa and Asia have lower intercepts, as well as a slope comparable to Northern America.
-:::
 
-::: column
-![Figure 2. Each Continents Change in Proportion of Women Over Time](media/fig_2.png){.rounded-img width="540"}
-:::
+
+```{r, echo = FALSE, fig.cap = "Fig 2: Each Continents Change in Proportion of Women Over Time"}
+total_data |>
+  mutate(country_region = ifelse(country_sub_region == "Northern America", 
+                        country_sub_region, 
+                        country_region)) |>
+  mutate(country_region = ifelse(country_sub_region == "Latin America and the Caribbean", 
+                        country_sub_region, 
+                        country_region)) |>
+  mutate(country_region = fct_recode(country_region, "Latin America\nand the Caribbean" = "Latin America and the Caribbean")) |>
+  drop_na(country_region) |>
+  ggplot(aes(x = meeting_year, y = prop_women, color = country_region)) +
+  geom_smooth(method = lm, se = F) +
+  labs(title = "Proportion of Women in Delegation Over Time by Continent",
+       x = "Year",
+       y = "Proportion of Women", 
+       color = "Contintent") +
+    scale_color_manual(values = c("Europe" = "steelblue4", 
+                              "Northern America" = "salmon", 
+                              "Latin America\nand the Caribbean" = "red4",
+                              "Asia" = "plum4", 
+                              "Oceania" = "goldenrod1",
+                              "Africa" = "seagreen")) +
+  theme_bw()
+```
+
+
 
 An unconditional growth model showed that meeting year is significant in predicting the proportion of women involved in COP delegations. This is unsurprising given the steady increase in proportion of women by meeting year shown in Figure 1. All subsequent models included our variables of interest: GDP per capita, HRI, and DI. Interactions between DI and level 2 variables were tested, but removed from the final model due to insignificance. Our final model is as follows:
-:::::
+
 
 ::: center-text
 **Level 1:**

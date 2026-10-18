@@ -481,32 +481,31 @@ We chose to use a multilevel model to answer our research question as the data i
 </table>
 </div>
 </div>
-<div class="columns">
-<div class="column">
 <p>To begin our modeling process, we looked at summary statistics for numeric variables. Table 1 shows the summary of the relevant numeric variables in our final model, excluding Meeting Year as it stayed relatively constant throughout the dataset. There is a large variation in the number of delegates from each country, which is why we used it as a weight later on in the modeling process. DI data is not recorded for every year, resulting in a high number of NA’s.</p>
 <p>Fig. 1 shows four important relationships. First, there is a correlation between a country’s DI Score and the proportion of women in their delegation; there is a decent amount of variability from the line, but a clear trend exists. Over time, we see there is an increasing average proportion of women in COP delegations.</p>
-</div><div class="column">
+<div class="cell">
+<div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="media/fig_1.png" class="rounded-img img-fluid figure-img" width="540"></p>
-<figcaption>Figure 1. Numeric Variable Correlation with Proportion of Women</figcaption>
+<p><img src="stats3project_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="960"></p>
+<figcaption>Fig. 1: Numeric Variable correlations with proportion of women</figcaption>
 </figure>
 </div>
 </div>
 </div>
-<div class="columns">
-<div class="column">
 <p>There may also be some potential explanatory value of a country’s HRI and log(GDP per Capita) on the proportion of women involved in a COP summit, though there is a much higher amount of variability. Log(GDP per capita) is especially variable.</p>
 <p>From Fig. 2, we can see that Northern America has the highest intercept for the proportion of women in a country’s delegation. However, the slope seems to be slightly flatter than many of the other continents; Europe, Latin America &amp; The Caribbean, and Oceania are at a very similar proportion of women in the most recent meeting years despite having a much lower intercept. Africa and Asia have lower intercepts, as well as a slope comparable to Northern America.</p>
-</div><div class="column">
+<div class="cell">
+<div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="media/fig_2.png" class="rounded-img img-fluid figure-img" width="540"></p>
-<figcaption>Figure 2. Each Continents Change in Proportion of Women Over Time</figcaption>
+<p><img src="stats3project_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Fig 2: Each Continents Change in Proportion of Women Over Time</figcaption>
 </figure>
 </div>
-</div><p>An unconditional growth model showed that meeting year is significant in predicting the proportion of women involved in COP delegations. This is unsurprising given the steady increase in proportion of women by meeting year shown in Figure 1. All subsequent models included our variables of interest: GDP per capita, HRI, and DI. Interactions between DI and level 2 variables were tested, but removed from the final model due to insignificance. Our final model is as follows:</p>
 </div>
+</div>
+<p>An unconditional growth model showed that meeting year is significant in predicting the proportion of women involved in COP delegations. This is unsurprising given the steady increase in proportion of women by meeting year shown in Figure 1. All subsequent models included our variables of interest: GDP per capita, HRI, and DI. Interactions between DI and level 2 variables were tested, but removed from the final model due to insignificance. Our final model is as follows:</p>
 <div class="center-text">
 <p><strong>Level 1:</strong></p>
 </div>
