@@ -196,7 +196,7 @@ hatchery_type |>
 Though not our intention, this graph reveals a strong correlation of wild fish being the
 heavier on average in all categories, and the hatchery raised median
 weights are much lighter. Hatchery raised fish, in fact, are nearly identical (\~25 grams) across all
-categories, indicating much more homogeneity in their group. Food by weight trends remain largely the same for wild salmon, though the averages are higher due to being seperated from hatchery fish. 
+categories, indicating much more homogeneity in their group. Food by weight trends remain largely the same for wild salmon, though the averages are higher due to being seperated from hatchery fish. z
 
 # Insulin Levels in Fish
 
