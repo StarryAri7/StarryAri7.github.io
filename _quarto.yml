@@ -17,7 +17,7 @@ website:
             
       - text: "Major Projects"
         menu:
-          - text: "Spatial Analysis of Goshawks"
+          - text: "Spatial Analysis of Goshawk Nest Indicators"
             href: Goshawks_Pres.Rmd
           - text: "Analysis of Salmon Stomach Contents"
             href: salmon_tummys.Rmd
