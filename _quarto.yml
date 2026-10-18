@@ -10,8 +10,9 @@ website:
       - href: index.qmd
         text: Home
       - about.qmd
-      - text: "Mini Projects"
-
+      
+      - text: "Previous Work History"
+      - href: aria_cv_26.pdf
             
       - text: "Major Projects"
         menu:
