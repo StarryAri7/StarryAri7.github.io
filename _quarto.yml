@@ -11,11 +11,7 @@ website:
         text: Home
       - about.qmd
       - text: "Mini Projects"
-        menu:
-          - text: "Mini Project #1"
-            href: MiniMapProject.qmd
-          - text: "Shiny Dashboard Project"
-            href: shiny.qmd
+
             
       - text: "Major Projects"
         menu:
