@@ -194,7 +194,6 @@ add_header_above(data_wide2, c(" ", "Toads" = 2, "Frogs" = 2)) |>
 
 Table 4 displays all variables divided by svl as a ratio of body size. These numbers are decimals and unitless, and represent a similar trend to the un-ratioed variables.
 
-
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 8, fig.align='center',fig.cap = "Boxplot of all Ratioed Variables, seperated by family. Most pairs have IQR overalap, though medians are statistically different in all plots (all p-values 1.4e-13 or lower). SVL represented in corner due to scale inequality, measured in millimeters -- all other measurements unitless."}
 
 p1 <- ratio_frogs |>
@@ -294,7 +293,7 @@ There are noticable differences between the families on an individual variable b
 
 <!-- ![Multiple angles of a 3d scatterplot using the 3 most impactful Variables](/home/rstudio/users/whalen4/salmon%20stomachs/Stats%202%20Project/data/plotly.png) -->
 
-```{r, echo = FALSE, fig.cap = "A 3d scatterplot using the 3 most impactful Variables"}
+```{r, echo = FALSE,warning = FALSE, message = FALSE, fig.cap = "A 3d scatterplot using the 3 most impactful Variables"}
 library(plotly)
 
 plot_ly(data = ratio_frogs,
